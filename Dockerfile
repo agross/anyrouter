@@ -1,5 +1,5 @@
 FROM alpine
-LABEL name='Meta Router'
+LABEL name='Default gateway switcher'
 LABEL version='1.0.0'
 LABEL maintainer='Alexander Groß <agross@therightstuff.de>'
 
