@@ -2,6 +2,9 @@
 
 const express = require('express');
 const os = require('os');
+const gateways = require('./lib/gateways');
+
+console.log(gateways.GATEWAYS);
 
 const app = express();
 app.set('views', 'views');
