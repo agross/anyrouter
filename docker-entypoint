@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# set -e
+
 if [ "$1" = 'run' ]; then
   iptables --list --table nat --numeric
 
@@ -7,7 +9,8 @@ if [ "$1" = 'run' ]; then
 
   sysctl net.ipv4.ip_forward
 
-  exec dnsmasq --no-daemon
+  # exec dnsmasq --no-daemon
+  exec supervisord --configuration /supervisord.conf
 fi
 
 exec "$@"

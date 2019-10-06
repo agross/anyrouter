@@ -1,0 +1,31 @@
+html
+  head
+    title Routing
+    link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+
+  body
+    div.container
+      h2 Host: #{os.hostname()}
+
+      h2 Environment Variables
+      ul
+        each name in Object.keys(env)
+          li
+            code
+              = name
+              | =
+              = env[name]
+
+      h2 Network Interfaces
+      ul
+        - var ifs = os.networkInterfaces()
+        each name in Object.keys(ifs)
+          li
+            code= name
+            ul
+              each addr in ifs[name]
+                li
+                  code= addr.address
+
+      h2 Default gateway
+      ul
