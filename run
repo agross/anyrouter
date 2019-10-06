@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+set -e
+
+docker build --tag router:latest .
+
+docker run \
+       --net=host \
+       --privileged \
+       --rm \
+       --name router \
+       router:latest \
+      "$@"
