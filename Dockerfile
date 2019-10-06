@@ -22,12 +22,13 @@ RUN apk add \
         \
         supervisor
 
-COPY docker-entypoint /
-COPY supervisord.conf /
+COPY [ "docker-entypoint", "supervisord.conf", "/" ]
 COPY dnsmasq/*.conf /etc/dnsmasq.d/
-COPY app /app
-
 RUN mkdir -p /var/log/supervisord
 
+# Speed up development.
 WORKDIR /app
+COPY [ "app/package.json", "app/yarn.lock", "./" ]
 RUN yarn install
+
+COPY [ "app", "./"]
