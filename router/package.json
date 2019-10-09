@@ -24,6 +24,7 @@
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
     "bull": "^3.11.0",
+    "is-reachable": "^4.0.0",
     "nest-bull": "^0.9.0",
     "network": "^0.4.1",
     "reflect-metadata": "^0.1.13",

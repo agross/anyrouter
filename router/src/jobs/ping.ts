@@ -1,6 +1,7 @@
-import { Job, DoneCallback } from 'bull';
+import { Job } from 'bull';
+import * as isReachable from 'is-reachable';
 
-export default function (job: Job, cb: DoneCallback) {
-  console.log(job);
-  cb(null, 'It works');
+export default function(job: Job) {
+  console.log('Checking ' + job.data + ' ' + job.id);
+  return isReachable(job.data);
 }

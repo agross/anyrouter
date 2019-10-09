@@ -17,7 +17,7 @@ console.log(processors);
 @Module({
   imports: [
     BullModule.register({
-      name: 'ping',
+      name: 'store',
       options: {
         redis: {
           port: 6379
