@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Queue } from 'bull';
+import { Queue, JobOptions } from 'bull';
 import { InjectQueue } from 'nest-bull';
-import Bull = require('bull');
+import { env } from 'process';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -18,16 +18,19 @@ export class AppService implements OnModuleInit {
     // "Bull is smart enough not to add the same repeatable job if the repeat
     // options are the same."
     // Same-named jobs need to have different repeat options.
-    const jobs = [
-      ['ping', 'google.de', { repeat: { every: 5000 } }],
-      ['ping', 'google.com', { repeat: { every: 5001 } }],
+    const pings = ((env['PING'] || '') + ',' + (env['GATEWAYS'] || ''))
+      .split(',')
+      .filter(p => p.length > 0)
+      .map((p, index) => ['ping', p, { repeat: { every: 5000 + index } }])
+
+    const jobs = pings.concat([
       ['default-gateway', null, { repeat: { every: 10000 } }],
       ['public-ip', null, { repeat: { every: 60000 } }]
-    ];
+    ]);
 
     const scheduled = jobs.map(async job => {
       const added = await this.queue.add(
-        ...(job as [string, string, Bull.JobOptions])
+        ...(job as [string, string, JobOptions])
       );
       console.log(
         'Scheduled job ' + JSON.stringify(job) + ' with ID ' + added.id
