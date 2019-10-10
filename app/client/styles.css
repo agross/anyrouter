@@ -1,0 +1,10 @@
+.connected,
+.success {
+  color: green;
+}
+
+.disconnected,
+.exception,
+.error {
+  color: red;
+}

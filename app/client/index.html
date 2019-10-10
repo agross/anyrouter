@@ -24,21 +24,18 @@
   <div id="app"
        class="container">
     <h1>{{ title }}</h1>
-    <div id="status">{{ status }}</div>
+    <div v-bind:class="[status]">{{ status }}</div>
     <div class="row">
       <div class="col-md-6 offset-md-3 col-sm-12">
-
-        <div id="chat">
+        <div id="message">
           <div class="card">
-            <div id="messages"
-                 class="card-block">
-              <ul>
-                <li v-for="(event, name) of events">
-                  {{ event.type }}<span v-if="JSON.stringify(event.data) !== JSON.stringify({})"> {{ event.data }}</span>:
-                  {{ event.result }} ({{ event.timestamp | moment("from", "now") }})
-                </li>
-              </ul>
-            </div>
+            <ul>
+              <li v-for="(event, name) of events"
+                  v-bind:class="{ success: event.result, error: !event.result }">
+                {{ event.type }}<span v-if="JSON.stringify(event.data) !== JSON.stringify({})"> {{ event.data }}</span>:
+                {{ event.result }} ({{ event.timestamp | moment("from", "now") }})
+              </li>
+            </ul>
           </div>
           <button id="send"
                   class="btn"
