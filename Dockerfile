@@ -20,15 +20,18 @@ RUN apk add \
         nodejs \
         yarn \
         \
+        redis \
+        \
         supervisor
 
-COPY [ "docker-entypoint", "supervisord.conf", "/" ]
+COPY [ "docker-entypoint", "supervisord/supervisord.conf", "/" ]
 COPY dnsmasq/*.conf /etc/dnsmasq.d/
 RUN mkdir -p /var/log/supervisord
 
-# Speed up development.
 WORKDIR /app
+# Speed up development.
 COPY [ "app/package.json", "app/yarn.lock", "./" ]
 RUN yarn install
 
 COPY [ "app", "./"]
+RUN yarn run build
