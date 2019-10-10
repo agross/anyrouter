@@ -8,25 +8,36 @@ export class AppService implements OnModuleInit {
   constructor(@InjectQueue('store') readonly queue: Queue) {}
 
   async onModuleInit() {
-    const options: Bull.JobOptions = {
-      repeat: { every: 5000 }
-    };
+    this.queue.clean(0, 'delayed');
+    this.queue.clean(0, 'wait');
+    this.queue.clean(0, 'active');
+    this.queue.clean(0, 'completed');
+    this.queue.clean(0, 'failed');
 
+    // https://optimalbits.github.io/bull/#repeatable
+    // "Bull is smart enough not to add the same repeatable job if the repeat
+    // options are the same."
+    // Same-named jobs need to have different repeat options.
     const jobs = [
-      ['ping', 'google.de'],
-      ['default-gateway', ''],
-      ['public-ip', '']
+      ['ping', 'google.de', { repeat: { every: 5000 } }],
+      ['ping', 'google.com', { repeat: { every: 5001 } }],
+      ['default-gateway', null, { repeat: { every: 10000 } }],
+      ['public-ip', null, { repeat: { every: 60000 } }]
     ];
 
     const scheduled = jobs.map(async job => {
-      const args = [...job, options];
       const added = await this.queue.add(
-        ...(args as [string, string, Bull.JobOptions])
+        ...(job as [string, string, Bull.JobOptions])
       );
-      console.log('Scheduled job ' + job[0] + ' with ID ' + added.id);
+      console.log(
+        'Scheduled job ' + JSON.stringify(job) + ' with ID ' + added.id
+      );
     });
 
     await Promise.all(scheduled);
-    console.log('Ready');
+
+    const allJobs = await this.queue.getJobs([]);
+    console.log(jobs);
+    console.log('Ready with ' + allJobs.length + ' jobs');
   }
 }

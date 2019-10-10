@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { Queue } from 'bull';
-import { InjectQueue, BullQueueEvent } from 'nest-bull';
+import { InjectQueue, BullQueueGlobalEvents } from 'nest-bull';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit {
@@ -16,15 +16,18 @@ export class EventsGateway implements OnGatewayInit {
   constructor(@InjectQueue('store') readonly queue: Queue) {}
 
   afterInit(server: any) {
-    this.queue.on('global:completed', async id => {
-      console.log(id);
-      const job = await this.queue.getJob(id);
-      this.onEvent(null, { type: job.name, result: job.returnvalue });
-    });
+    this.queue.on(
+      BullQueueGlobalEvents.COMPLETED,
+      async (id, result, _status) => {
+        const job = await this.queue.getJob(id);
+        this.onEvent({ type: job.name, data: job.data, result: result });
+        await job.remove();
+      }
+    );
   }
 
   @SubscribeMessage('events')
-  onEvent(client: any, data: any) {
-    this.server.emit("events", data);
+  onEvent(data: any) {
+    this.server.emit('events', data);
   }
 }

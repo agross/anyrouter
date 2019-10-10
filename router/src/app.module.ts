@@ -1,17 +1,20 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BullModule } from 'nest-bull';
+import { BullModule, BullQueueAdvancedSeparateProcessor } from 'nest-bull';
 import * as path from 'path';
 import * as glob from 'glob';
 import { EventsModule } from './events/events.module';
 
-const processors = glob.sync(path.join(__dirname, 'jobs', '*.js')).map(fn => {
-  return {
-    name: path.basename(fn, path.extname(fn)),
-    path: fn
-  };
-});
+const processors: BullQueueAdvancedSeparateProcessor[] = glob
+  .sync(path.join(__dirname, 'jobs', '*.js'))
+  .map(fn => {
+    return {
+      name: path.basename(fn, path.extname(fn)),
+      path: fn,
+      concurrency: 2
+    };
+  });
 
 console.log(processors);
 
