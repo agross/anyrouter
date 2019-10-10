@@ -11,7 +11,7 @@ const app = new Vue({
   },
   methods: {
     setDefaultGateway: function () {
-      this.socket.emit('setDefaultGateway', { gateway: '1.2.3.5' }, response => {
+      this.socket.emit('setDefaultGateway', { gateway: '172.18.0.5' }, response => {
         console.log(response);
       });
     },
