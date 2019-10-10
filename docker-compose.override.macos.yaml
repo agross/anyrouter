@@ -1,0 +1,13 @@
+# macOS makes it hard to connect to a service running on --net=host.
+# For this environment we use the standard approach to run the
+# services on a separate network.
+
+version: "2.4"
+
+services:
+  redis:
+    ports:
+      - "3000:3000"
+
+  app:
+    network_mode: "service:redis"

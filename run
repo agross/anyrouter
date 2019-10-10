@@ -1,3 +1,10 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-docker-compose --project-name anyrouter up --build
+set -euo pipefail
+docker=(docker-compose --project-name anyrouter)
+
+if [[ "$(uname)" == *Darwin* ]]; then
+  docker+=(--file docker-compose.yaml --file docker-compose.override.macos.yaml)
+fi
+
+"${docker[@]}" up --build
