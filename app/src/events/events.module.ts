@@ -1,19 +1,9 @@
 import { Module } from '@nestjs/common';
 import { EventsGateway } from './events.gateway';
-import { BullModule } from 'nest-bull';
+import { JobsModule } from '../jobs/jobs.module';
 
 @Module({
-  imports: [
-    // TODO is there a way to share this with app.module?
-    BullModule.register({
-      name: 'store',
-      options: {
-        redis: {
-          port: 6379
-        }
-      }
-    })
-  ],
+  imports: [JobsModule.register()],
   providers: [EventsGateway]
 })
 export class EventsModule {}

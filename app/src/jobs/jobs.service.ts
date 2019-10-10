@@ -4,8 +4,8 @@ import { InjectQueue } from 'nest-bull';
 import { env } from 'process';
 
 @Injectable()
-export class AppService implements OnModuleInit {
-  constructor(@InjectQueue('store') readonly queue: Queue) {}
+export class JobsService implements OnModuleInit {
+  constructor(@InjectQueue('store') readonly queue: Queue) { }
 
   async onModuleInit() {
     this.queue.clean(0, 'delayed');
@@ -21,7 +21,7 @@ export class AppService implements OnModuleInit {
     const pings = ((env['PING'] || '') + ',' + (env['GATEWAYS'] || ''))
       .split(',')
       .filter(p => p.length > 0)
-      .map((p, index) => ['ping', p, { repeat: { every: 5000 + index } }])
+      .map((p, index) => ['ping', p, { repeat: { every: 5000 + index } }]);
 
     const jobs = pings.concat([
       ['default-gateway', null, { repeat: { every: 10000 } }],
@@ -32,15 +32,13 @@ export class AppService implements OnModuleInit {
       const added = await this.queue.add(
         ...(job as [string, string, JobOptions])
       );
-      console.log(
-        'Scheduled job ' + JSON.stringify(job) + ' with ID ' + added.id
-      );
+      console.log(`Scheduled job ${JSON.stringify(job)} with ID ${added.id}`);
     });
 
     await Promise.all(scheduled);
 
     const allJobs = await this.queue.getJobs([]);
     console.log(jobs);
-    console.log('Ready with ' + allJobs.length + ' jobs');
+    console.log(`${allJobs.length} jobs ready`);
   }
 }

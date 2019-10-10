@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { Queue } from 'bull';
-import { InjectQueue, BullQueueGlobalEvents } from 'nest-bull';
+import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit {
