@@ -1,5 +1,9 @@
 import { Module, DynamicModule, OnModuleInit } from '@nestjs/common';
-import { BullModule, BullQueueAdvancedSeparateProcessor, InjectQueue } from 'nest-bull';
+import {
+  BullModule,
+  BullQueueAdvancedSeparateProcessor,
+  InjectQueue
+} from 'nest-bull';
 import { JobsService } from './jobs.service';
 import * as path from 'path';
 import * as glob from 'glob';

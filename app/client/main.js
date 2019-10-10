@@ -10,8 +10,10 @@ const app = new Vue({
     events: {}
   },
   methods: {
-    sendMessage: function() {
-      this.socket.emit('msgToServer', message);
+    setDefaultGateway: function () {
+      this.socket.emit('setDefaultGateway', { gateway: '1.2.3.5' }, response => {
+        console.log(response);
+      });
     },
     setStatus: function (status, exception) {
       this.status = status;

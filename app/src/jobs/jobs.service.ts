@@ -5,7 +5,7 @@ import { env } from 'process';
 
 @Injectable()
 export class JobsService implements OnModuleInit {
-  constructor(@InjectQueue('store') readonly queue: Queue) { }
+  constructor(@InjectQueue('store') readonly queue: Queue) {}
 
   async onModuleInit() {
     this.queue.clean(0, 'delayed');
@@ -24,7 +24,7 @@ export class JobsService implements OnModuleInit {
       .map((p, index) => ['ping', p, { repeat: { every: 5000 + index } }]);
 
     const jobs = pings.concat([
-      ['default-gateway', null, { repeat: { every: 10000 } }],
+      ['get-default-gateway', null, { repeat: { every: 10000 } }],
       ['public-ip', null, { repeat: { every: 60000 } }]
     ]);
 
