@@ -10,11 +10,6 @@ export class AppController {
     @InjectQueue('store') readonly queue: Queue
   ) {}
 
-  @Get()
-  async getHello(): Promise<string> {
-    return 'hello world';
-  }
-
   @Get(':id')
   async getJob(@Param('id') id: string) {
     return await this.queue.getJob(id);

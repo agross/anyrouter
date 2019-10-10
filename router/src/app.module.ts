@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { BullModule } from 'nest-bull';
 import * as path from 'path';
 import * as glob from 'glob';
+import { EventsModule } from './events/events.module';
 
 const processors = glob.sync(path.join(__dirname, 'jobs', '*.js')).map(fn => {
   return {
@@ -16,6 +17,7 @@ console.log(processors);
 
 @Module({
   imports: [
+    EventsModule,
     BullModule.register({
       name: 'store',
       options: {
