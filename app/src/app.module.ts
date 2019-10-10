@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { EventsModule } from './events/events.module';
-import { JobsModule } from './jobs/jobs.module';
 
 @Module({
-  imports: [EventsModule, JobsModule.register()],
+  imports: [EventsModule],
   controllers: [AppController]
 })
 export class AppModule {}
