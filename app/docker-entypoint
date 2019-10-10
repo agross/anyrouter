@@ -10,9 +10,7 @@ if [ "$1" = 'run' ]; then
   ip route --help
 
   sysctl net.ipv4.ip_forward
-
-  # exec dnsmasq --no-daemon
-  exec supervisord --configuration /supervisord.conf
+  exec yarn run start:prod
 fi
 
 exec "$@"

@@ -1,0 +1,45 @@
+version: "2.4"
+
+services:
+  redis:
+    image: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: redis-cli -h localhost ping | grep -xq PONG || exit 1
+      start_period: 5s
+    sysctls:
+      net.core.somaxconn: 512
+
+  dnsmasq:
+    image: agross/dnsmasq
+    build:
+      context: dnsmasq
+      dockerfile: Dockerfile
+    network_mode: host
+    volumes:
+      - dnsmasq-leases:/dnsmasq-leases
+
+  app:
+    image: agross/anyrouter
+    build:
+      context: app
+      dockerfile: Dockerfile
+    network_mode: host
+    privileged: true
+    environment:
+      GATEWAYS: 192.168.178.1,192.168.178.2
+      PING: google.de,google.com
+    depends_on:
+      dnsmasq:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis-data:
+    driver: local
+  dnsmasq-leases:
+    driver: local

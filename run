@@ -1,14 +1,3 @@
 #!/usr/bin/env sh
 
-set -e
-
-docker build --tag router:latest .
-
-docker run \
-       --net=host \
-       --privileged \
-       --rm \
-       --name router \
-       --env GATEWAYS=192.168.178.1,192.168.178.2 \
-       router:latest \
-      "$@"
+docker-compose --project-name anyrouter up --build
