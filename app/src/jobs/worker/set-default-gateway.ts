@@ -2,7 +2,7 @@ import { Job } from 'bull';
 import { spawn } from 'child_process';
 
 export default async function(job: Job) {
-  console.log('Setting default gateway ' + job.id);
+  console.log(`${job.data.description} ${job.id}`);
 
   await new Promise((resolve, reject) => {
     const process = spawn('ip', ['route', 'del', 'default']);

@@ -9,6 +9,7 @@ import { Server } from 'ws';
 import { Queue, JobId } from 'bull';
 import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 import { SetDefaultGateway } from './models/set-default-gateway';
+import { Event, EventStatus } from './models/event';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit {
@@ -18,51 +19,45 @@ export class EventsGateway implements OnGatewayInit {
   constructor(@InjectQueue('store') readonly queue: Queue) {}
 
   afterInit(server: any) {
-    // Job scheduled.
-    this.queue.on(
-      BullQueueGlobalEvents.ACTIVE,
-      async (id, _result, _status) => {
-        const job = await this.queue.getJob(id);
-        this.onEvent({
-          type: job.name,
-          data: job.data,
-          timestamp: new Date(),
-          result: 'running'
-        });
-      }
-    );
+    this.queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
+      const job = await this.queue.getJob(id);
+      this.onEvent({
+        type: job.name,
+        status: EventStatus.Running,
+        data: job.data,
+        timestamp: job.processedOn
+      });
+    });
 
-    // Job failed.
-    this.queue.on(
-      BullQueueGlobalEvents.FAILED,
-      async (id, _result, _status) => {
-        const job = await this.queue.getJob(id);
-        this.onEvent({
-          type: job.name,
-          data: job.data,
-          timestamp: job.finishedOn,
-          result: job.stacktrace
-        });
+    this.queue.on(BullQueueGlobalEvents.FAILED, async id => {
+      const job = await this.queue.getJob(id);
+      this.onEvent({
+        type: job.name,
+        status: EventStatus.Failed,
+        data: job.data,
+        timestamp: job.finishedOn,
+        error: job.stacktrace.reduce(
+          (acc, line) => acc.concat(line.split('\n')),
+          []
+        )
+      });
 
-        await job.remove();
-      }
-    );
+      await job.remove();
+    });
 
-    // Job completed successfully.
-    this.queue.on(
-      BullQueueGlobalEvents.COMPLETED,
-      async (id, _result, _status) => {
-        const job = await this.queue.getJob(id);
-        this.onEvent({
-          type: job.name,
-          data: job.data,
-          timestamp: job.finishedOn,
-          result: job.returnvalue
-        });
+    this.queue.on(BullQueueGlobalEvents.COMPLETED, async id => {
+      const job = await this.queue.getJob(id);
+      this.onEvent({
+        type: job.name,
+        status: EventStatus.Successful,
+        data: job.data,
+        timestamp: job.finishedOn,
+        result: job.returnvalue,
+        error: []
+      });
 
-        await job.remove();
-      }
-    );
+      await job.remove();
+    });
   }
 
   @SubscribeMessage('setDefaultGateway')
@@ -72,20 +67,15 @@ export class EventsGateway implements OnGatewayInit {
     console.log('Changing gateway to ' + message.gateway);
 
     const job = await this.queue.add('set-default-gateway', {
+      description: 'Set default gateway',
       gateway: message.gateway
     });
 
-    this.onEvent({
-      type: job.name,
-      data: job.data,
-      timestamp: new Date(),
-      result: null
-    });
     return job.id;
   }
 
   @SubscribeMessage('events')
-  onEvent(data: any) {
+  onEvent(data: Event) {
     this.server.emit('events', data);
   }
 }

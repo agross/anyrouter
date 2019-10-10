@@ -1,10 +1,14 @@
 .connected,
-.success {
+.successful {
   color: green;
+
+}
+.running {
+  color: goldenrod;
 }
 
 .disconnected,
 .exception,
-.error {
+.failed {
   color: red;
 }

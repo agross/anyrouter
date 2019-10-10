@@ -15,13 +15,20 @@ const app = new Vue({
         console.log(response);
       });
     },
+    setDefaultGateway2: function () {
+      this.socket.emit('setDefaultGateway', { gateway: '172.18.0.1' }, response => {
+        console.log(response);
+      });
+    },
     setStatus: function (status, exception) {
       this.status = status;
       this.exception = exception;
     },
     receivedEvent: function (event) {
       event.timestamp = new Date(event.timestamp);
-      Vue.set(this.events, event.type + event.data, event);
+      const existing = this.events[event.type + event.data.description] || {};
+      extended = Object.assign({}, existing, event);
+      Vue.set(this.events, event.type + event.data.description, extended);
     }
   },
   created() {
