@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+
+cd "${0%%/*}"
+
 docker=(docker-compose --project-name anyrouter)
 
 if [[ "$(uname)" == *Darwin* ]]; then
