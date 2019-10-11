@@ -10,11 +10,13 @@ import { Queue, JobId } from 'bull';
 import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 import { SetDefaultGateway } from './models/set-default-gateway';
 import { Event, EventStatus } from './models/event';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
+  private readonly logger = new Logger(EventsGateway.name);
 
   constructor(@InjectQueue('store') readonly queue: Queue) {}
 
@@ -64,7 +66,7 @@ export class EventsGateway implements OnGatewayInit {
   async setDefaultGateway(
     @MessageBody() message: SetDefaultGateway
   ): Promise<JobId> {
-    console.log('Changing gateway to ' + message.gateway);
+    this.logger.log(`Setting ${message.gateway} as default gateway`);
 
     const job = await this.queue.add('set-default-gateway', {
       description: 'Set default gateway',

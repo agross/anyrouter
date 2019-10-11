@@ -1,4 +1,4 @@
-import { Module, DynamicModule, Global } from '@nestjs/common';
+import { Module, DynamicModule, Global, Logger } from '@nestjs/common';
 import { BullModule, BullQueueAdvancedSeparateProcessor } from 'nest-bull';
 import { JobsService } from './jobs.service';
 import * as path from 'path';
@@ -7,6 +7,8 @@ import * as glob from 'glob';
 @Global()
 @Module({})
 export class JobsModule {
+  private static readonly logger = new Logger(JobsModule.name);
+
   static register(): DynamicModule {
     const processors: BullQueueAdvancedSeparateProcessor[] = glob
       .sync(path.join(__dirname, 'worker', '*.js'))
@@ -18,7 +20,7 @@ export class JobsModule {
         };
       });
 
-    console.log(processors);
+    this.logger.log(`Queue processors: ${JSON.stringify(processors, null, 2)}`);
 
     const queue = BullModule.register({
       name: 'store',

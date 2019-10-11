@@ -1,8 +1,11 @@
 import { Job } from 'bull';
+import { Logger } from '@nestjs/common';
+import * as path from 'path';
 import { spawn } from 'child_process';
 
 export default async function(job: Job) {
-  console.log(`${job.data.description} ${job.id}`);
+  const logger = new Logger(`${path.basename(__filename, path.extname(__filename))} worker`);
+  logger.log(`${job.data.description} ${job.id}`);
 
   await new Promise((resolve, reject) => {
     const process = spawn('ip', ['route', 'del', 'default']);

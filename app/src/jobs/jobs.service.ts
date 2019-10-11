@@ -1,10 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { Queue, JobOptions } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { env } from 'process';
 
 @Injectable()
 export class JobsService implements OnModuleInit {
+  private readonly logger = new Logger(JobsService.name);
+
   constructor(@InjectQueue('store') readonly queue: Queue) {}
 
   async onModuleInit() {
@@ -22,8 +24,9 @@ export class JobsService implements OnModuleInit {
     await this.schedule(jobs);
 
     const allJobs = await this.queue.getJobs([]);
-    console.log(jobs);
-    console.log(`${allJobs.length} jobs ready`);
+    this.logger.log(
+      `${JSON.stringify(jobs, null, 2)}\n${allJobs.length} jobs ready`
+    );
   }
 
   private clearAllJobs() {
@@ -52,7 +55,9 @@ export class JobsService implements OnModuleInit {
   private schedule(jobs: [string, any, JobOptions][]) {
     const scheduled = jobs.map(async job => {
       const added = await this.queue.add(...(job as [string, any, JobOptions]));
-      console.log(`Scheduled job ${JSON.stringify(job)} with ID ${added.id}`);
+      this.logger.log(
+        `Scheduled job ${JSON.stringify(job)} with ID ${added.id}`
+      );
     });
 
     return Promise.all(scheduled);
