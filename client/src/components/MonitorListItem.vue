@@ -11,7 +11,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class MonitorListItem extends Vue {
-  @Prop() private event!: any;
+  @Prop({ required: true }) private event!: any;
 
   get running() {
     return this.event.status.indexOf('running') !== -1;
