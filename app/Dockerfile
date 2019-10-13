@@ -33,7 +33,9 @@ RUN apk add \
   && yarn install \
           --production \
           --frozen-lockfile \
-  && apk del .gyp
+  && apk del \
+         --no-cache \
+         .gyp
 
 COPY . .
 RUN yarn run build
