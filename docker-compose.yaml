@@ -19,6 +19,7 @@ services:
       context: dnsmasq
       dockerfile: Dockerfile
     network_mode: host
+    privileged: true
     volumes:
       - dnsmasq-leases:/dnsmasq-leases
 
