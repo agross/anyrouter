@@ -19,23 +19,6 @@ export class ConfigService {
     this.logger.log(`Config: ${JSON.stringify(this.envConfig, null, 2)}`);
   }
 
-  private test(value: any, helpers: Joi.CustomHelpers): any {
-    return value
-      .split(',')
-      .filter(entry => entry.length > 0)
-      .map(hostDescription => hostDescription.split('='))
-      .map(descriptionAndHost => {
-        let [description, host] = descriptionAndHost;
-        if (!host) {
-          host = description;
-        }
-
-        return {
-          description: description,
-          host: host
-        };
-      });
-  }
   private validateInput(envConfig: EnvConfig): EnvConfig {
     const schema: Joi.ObjectSchema = Joi.object({
       NODE_ENV: Joi.string()
@@ -49,7 +32,10 @@ export class ConfigService {
         .description('Useable gateways'),
       PING: Joi.string()
         .custom(this.getHostDescriptions)
-        .description('Hosts to ping')
+        .description('Hosts to ping'),
+      ENABLE_CORS: Joi.boolean()
+        .default(false)
+        .description('Enable CORS for development')
     });
 
     const { error, value: validatedConfig } = schema.validate(envConfig);
@@ -96,5 +82,9 @@ export class ConfigService {
 
   get gateways(): HostDescription[] {
     return this.envConfig.GATEWAYS as HostDescription[];
+  }
+
+  get enableCors(): Boolean {
+    return Boolean(this.envConfig.ENABLE_CORS);
   }
 }

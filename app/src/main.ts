@@ -12,7 +12,13 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   const logger = new Logger(__filename);
-  logger.log(`Listening on port ${config.httpPort}`);
+  logger.log(
+    `Listening on port ${config.httpPort}, CORS: ${config.enableCors}`
+  );
+
+  if (config.enableCors) {
+    app.enableCors();
+  }
 
   await app.listen(config.httpPort);
 }
