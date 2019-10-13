@@ -1,13 +1,16 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { Queue, JobOptions } from 'bull';
 import { InjectQueue } from 'nest-bull';
-import { env } from 'process';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class JobsService implements OnModuleInit {
   private readonly logger = new Logger(JobsService.name);
 
-  constructor(@InjectQueue('store') readonly queue: Queue) {}
+  constructor(
+    private readonly config: ConfigService,
+    @InjectQueue('store') private readonly queue: Queue
+  ) {}
 
   async onModuleInit() {
     this.clearAllJobs();
@@ -42,12 +45,10 @@ export class JobsService implements OnModuleInit {
     // "Bull is smart enough not to add the same repeatable job if the repeat
     // options are the same."
     // Same-named jobs need to have different repeat options.
-    return ((env['PING'] || '') + ',' + (env['GATEWAYS'] || ''))
-      .split(',')
-      .filter(host => host.length > 0)
+    return this.config.pingHosts.concat(this.config.gateways)
       .map((host, index) => [
         'ping',
-        { description: `Ping ${host}`, host: host },
+        { description: `Ping ${host.description}`, host: host.host },
         { repeat: { every: 5000 + index } }
       ]);
   }
