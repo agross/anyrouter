@@ -10,7 +10,7 @@ export interface EnvConfig {
 
 export class ConfigService {
   private readonly logger = new Logger(ConfigService.name);
-  private readonly envConfig: { [key: string]: string };
+  private readonly envConfig: { [key: string]: any };
 
   constructor(filePath: string) {
     const config = dotenv.parse(fs.readFileSync(filePath));
@@ -19,6 +19,23 @@ export class ConfigService {
     this.logger.log(`Config: ${JSON.stringify(this.envConfig, null, 2)}`);
   }
 
+  private test(value: any, helpers: Joi.CustomHelpers): any {
+    return value
+      .split(',')
+      .filter(entry => entry.length > 0)
+      .map(hostDescription => hostDescription.split('='))
+      .map(descriptionAndHost => {
+        let [description, host] = descriptionAndHost;
+        if (!host) {
+          host = description;
+        }
+
+        return {
+          description: description,
+          host: host
+        };
+      });
+  }
   private validateInput(envConfig: EnvConfig): EnvConfig {
     const schema: Joi.ObjectSchema = Joi.object({
       NODE_ENV: Joi.string()
@@ -27,8 +44,12 @@ export class ConfigService {
       HTTP_PORT: Joi.number()
         .default(3000)
         .description('Port the application listens on'),
-      GATEWAYS: Joi.string().description('Useable gateways'),
-      PING: Joi.string().description('Hosts to ping')
+      GATEWAYS: Joi.string()
+        .custom(this.getHostDescriptions)
+        .description('Useable gateways'),
+      PING: Joi.string()
+        .custom(this.getHostDescriptions)
+        .description('Hosts to ping')
     });
 
     const { error, value: validatedConfig } = schema.validate(envConfig);
@@ -40,15 +61,10 @@ export class ConfigService {
     return validatedConfig;
   }
 
-  get(key: string): string {
-    return this.envConfig[key];
-  }
-
-  get httpPort(): number {
-    return Number(this.envConfig.HTTP_PORT);
-  }
-
-  private getHostDescriptions(value: string): HostDescription[] {
+  private getHostDescriptions(
+    value: any,
+    _helpers: Joi.CustomHelpers
+  ): HostDescription[] {
     return value
       .split(',')
       .filter(entry => entry.length > 0)
@@ -66,11 +82,19 @@ export class ConfigService {
       });
   }
 
+  get(key: string): string {
+    return this.envConfig[key];
+  }
+
+  get httpPort(): number {
+    return Number(this.envConfig.HTTP_PORT);
+  }
+
   get pingHosts(): HostDescription[] {
-    return this.getHostDescriptions(this.envConfig.PING);
+    return this.envConfig.PING as HostDescription[];
   }
 
   get gateways(): HostDescription[] {
-    return this.getHostDescriptions(this.envConfig.GATEWAYS);
+    return this.envConfig.GATEWAYS as HostDescription[];
   }
 }

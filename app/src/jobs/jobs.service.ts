@@ -45,7 +45,8 @@ export class JobsService implements OnModuleInit {
     // "Bull is smart enough not to add the same repeatable job if the repeat
     // options are the same."
     // Same-named jobs need to have different repeat options.
-    return this.config.pingHosts.concat(this.config.gateways)
+    return this.config.pingHosts
+      .concat(this.config.gateways)
       .map((host, index) => [
         'ping',
         { description: `Ping ${host.description}`, host: host.host },
