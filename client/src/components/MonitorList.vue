@@ -2,8 +2,9 @@
   <section>
     <h3><font-awesome-icon icon="check-double" />Monitors</h3>
     <ul>
-      <MonitorListItem title="One" :running="true"></MonitorListItem>
-      <MonitorListItem title="Two"></MonitorListItem>
+      <MonitorListItem v-for="event of events"
+                       v-bind:key="event.data.description"
+                       :event="event"></MonitorListItem>
     </ul>
   </section>
 </template>
@@ -11,6 +12,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import MonitorListItem from './MonitorListItem.vue';
+import { Socket } from 'vue-socket.io-extended';
 
 @Component({
   components: {
@@ -18,9 +20,17 @@ import MonitorListItem from './MonitorListItem.vue';
   },
 })
 export default class MonitorList extends Vue {
+  private events: { [key: string]: any } = {};
+
+  @Socket('events')
+  private receivedEvent(event: any) {
+    event.timestamp = new Date(event.timestamp);
+    const existing = this.events[event.type + event.data.description] || {};
+    const extended = Object.assign({}, existing, event);
+    Vue.set(this.events, event.type + event.data.description, extended);
+  }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 </style>
