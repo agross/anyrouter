@@ -13,7 +13,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class MonitorListItem extends Vue {
   @Prop({ required: true }) private event!: any;
 
-  get running() {
+  private get running() {
     return this.event.status.indexOf('running') !== -1;
   }
 }

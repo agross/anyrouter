@@ -4,7 +4,7 @@
     <ul>
       <ActionListItem v-for="gateway of gateways"
                       v-bind:key="gateway.host"
-                      :title="gateway.description"></ActionListItem>
+                      :gateway="gateway"></ActionListItem>
     </ul>
   </section>
 </template>
