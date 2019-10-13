@@ -1,7 +1,7 @@
 <template>
    <li :class="[event.status]">
      <font-awesome-icon icon="circle-notch"
-                        :spin="event.status == 'running'"/>
+                        :spin="event.status.indexOf('running') !== -1"/>
      {{ event.data.description }}
    </li>
 </template>
@@ -18,10 +18,6 @@ export default class MonitorListItem extends Vue {
 <style scoped lang="scss">
 li.successful svg {
   color: green;
-}
-
-li.running svg {
-  color: goldenrod;
 }
 
 li.failed svg {

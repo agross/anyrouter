@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h3><font-awesome-icon icon="check-double" />Monitors</h3>
+    <h3><font-awesome-icon icon="check-double" /> Monitors</h3>
     <ul>
       <MonitorListItem v-for="event of events"
                        v-bind:key="event.data.description"
@@ -27,6 +27,9 @@ export default class MonitorList extends Vue {
     event.timestamp = new Date(event.timestamp);
     const existing = this.events[event.type + event.data.description] || {};
     const extended = Object.assign({}, existing, event);
+    if (extended.status === 'running') {
+      extended.status += ' ' + existing.status;
+    }
     Vue.set(this.events, event.type + event.data.description, extended);
   }
 }
