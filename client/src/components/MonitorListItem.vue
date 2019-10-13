@@ -1,7 +1,7 @@
 <template>
    <li :class="[event.status]">
      <font-awesome-icon icon="circle-notch"
-                        :spin="event.status.indexOf('running') !== -1"/>
+                        :spin="running"/>
      {{ event.data.description }}
    </li>
 </template>
@@ -12,6 +12,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class MonitorListItem extends Vue {
   @Prop() private event = {};
+
+  get running() {
+    return this.event.status.indexOf('running') !== -1;
+  }
 }
 </script>
 
