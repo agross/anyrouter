@@ -3,7 +3,8 @@ import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayInit,
-  MessageBody
+  MessageBody,
+  OnGatewayConnection
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { Queue, JobId } from 'bull';
@@ -11,14 +12,19 @@ import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 import { SetDefaultGateway } from './models/set-default-gateway';
 import { Event, EventStatus } from './models/event';
 import { Logger } from '@nestjs/common';
+import { Socket } from 'socket.io';
+import { ConfigService } from '../config/config.service';
 
 @WebSocketGateway()
-export class EventsGateway implements OnGatewayInit {
+export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()
   server: Server;
   private readonly logger = new Logger(EventsGateway.name);
 
-  constructor(@InjectQueue('store') readonly queue: Queue) {}
+  constructor(
+    private readonly config: ConfigService,
+    @InjectQueue('store') readonly queue: Queue
+  ) {}
 
   afterInit(server: any) {
     this.queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
@@ -60,6 +66,11 @@ export class EventsGateway implements OnGatewayInit {
 
       await job.remove();
     });
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log(`New client connected ${client.client.id}`);
+    client.emit('gateways', this.config.gateways);
   }
 
   @SubscribeMessage('setDefaultGateway')

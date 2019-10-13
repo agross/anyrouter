@@ -29,6 +29,10 @@
       <div class="col-md-6 offset-md-3 col-sm-12">
         <div id="message">
           <div class="card">
+            <button v-for="gateway of gateways" @click.prevent="setDefaultGateway"
+                    v-bind:data-gateway="gateway.host">
+            Use {{ gateway.description }}
+            </button>
             <ul>
               <li v-for="(event, name) of events"
                   v-bind:class="[event.status]">
@@ -41,8 +45,6 @@
               </li>
             </ul>
           </div>
-          <button @click.prevent="setDefaultGateway">Set default gateway</button>
-          <button @click.prevent="setDefaultGateway2">Set default gateway</button>
         </div>
       </div>
     </div>

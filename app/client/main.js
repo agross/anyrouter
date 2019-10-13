@@ -7,16 +7,15 @@ const app = new Vue({
     socket: null,
     status: null,
     exception: null,
-    events: {}
+    events: {},
+    gateways: []
   },
   methods: {
-    setDefaultGateway: function () {
-      this.socket.emit('setDefaultGateway', { gateway: '172.18.0.5' }, response => {
-        console.log(response);
-      });
-    },
-    setDefaultGateway2: function () {
-      this.socket.emit('setDefaultGateway', { gateway: '172.18.0.1' }, response => {
+    setDefaultGateway: function (event) {
+      event.target
+      this.socket.emit('setDefaultGateway', {
+            gateway: event.target.dataset.gateway
+          }, response => {
         console.log(response);
       });
     },
@@ -29,6 +28,9 @@ const app = new Vue({
       const existing = this.events[event.type + event.data.description] || {};
       extended = Object.assign({}, existing, event);
       Vue.set(this.events, event.type + event.data.description, extended);
+    },
+    receivedGateways: function(gateways) {
+      this.gateways = gateways;
     }
   },
   created() {
@@ -45,6 +47,9 @@ const app = new Vue({
     });
     this.socket.on('events', event => {
       this.receivedEvent(event);
+    });
+    this.socket.on('gateways', gateways => {
+      this.receivedGateways(gateways);
     });
   }
 });
