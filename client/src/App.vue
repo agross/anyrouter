@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1><font-awesome-icon icon="route" /> anyrouter</h1>
+    <h1 :class="{ connected: $socket.connected }"><font-awesome-icon icon="route"/> anyrouter</h1>
     <ActionList></ActionList>
     <MonitorList></MonitorList>
   </div>
@@ -30,5 +30,13 @@ export default class App extends Vue {}
   margin-left: auto;
   margin-right: auto;
   width: 200px;
+}
+
+h1 {
+  color: red;
+
+  &.connected {
+    color: green;
+  }
 }
 </style>
