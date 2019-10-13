@@ -1,8 +1,13 @@
 <template>
   <li>
-    <button :disabled="isCurrentDefaultGateway"
-            :data-gateway="gateway.host">
-      <font-awesome-icon icon="check" v-if="isCurrentDefaultGateway" /> Use {{ gateway.description }}
+    <button :disabled="isDefault"
+            v-on:click.prevent="setGateway">
+      <font-awesome-icon icon="check"
+                         v-if="isDefault" />
+      <font-awesome-icon icon="circle-notch"
+                         :spin="running"
+                         v-if="running" />
+      Use {{ gateway.description }}
     </button>
   </li>
 </template>
@@ -14,23 +19,30 @@ import { Socket } from 'vue-socket.io-extended';
 @Component
 export default class ActionListItem extends Vue {
   @Prop({ required: true }) private gateway!: any;
-  private currentDefaultGateway: any;
+  private isDefault = false;
+  private running = false;
 
-  private get isCurrentDefaultGateway(): boolean {
-    return this.gateway.host === this.currentDefaultGateway;
+  private setGateway() {
+    this.$socket.client.emit('setDefaultGateway', {
+      gateway: this.gateway.host,
+    });
   }
 
   @Socket('events')
   private receivedEvent(event: any) {
-    if (event.type !== 'get-default-gateway') {
+    if (!['get-default-gateway', 'set-default-gateway'].includes(event.type)) {
       return;
     }
 
-    if (event.status !== 'successful') {
-      return;
+    if (event.type === 'set-default-gateway') {
+      this.running = event.status === 'running' &&
+                     event.data.gateway === this.gateway.host;
     }
 
-    this.currentDefaultGateway = event.result;
+    if (event.type === 'get-default-gateway' &&
+        event.status === 'successful') {
+      this.isDefault = event.result === this.gateway.host;
+    }
   }
 }
 </script>
