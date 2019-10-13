@@ -28,9 +28,13 @@ export class ConfigService {
         .default(3000)
         .description('Port the application listens on'),
       GATEWAYS: Joi.string()
+        .optional()
+        .allow('')
         .custom(this.getHostDescriptions)
         .description('Useable gateways'),
       PING: Joi.string()
+        .optional()
+        .allow('')
         .custom(this.getHostDescriptions)
         .description('Hosts to ping'),
       ENABLE_CORS: Joi.boolean()
@@ -77,11 +81,11 @@ export class ConfigService {
   }
 
   get pingHosts(): HostDescription[] {
-    return this.envConfig.PING as HostDescription[];
+    return (this.envConfig.PING || []) as HostDescription[];
   }
 
   get gateways(): HostDescription[] {
-    return this.envConfig.GATEWAYS as HostDescription[];
+    return (this.envConfig.GATEWAYS || []) as HostDescription[];
   }
 
   get enableCors(): Boolean {
