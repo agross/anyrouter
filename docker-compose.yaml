@@ -29,9 +29,6 @@ services:
       dockerfile: Dockerfile
     network_mode: host
     privileged: true
-    environment:
-      GATEWAYS: 192.168.178.1,192.168.178.2
-      PING: google.de,google.com
     depends_on:
       dnsmasq:
         condition: service_started

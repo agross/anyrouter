@@ -10,7 +10,7 @@ if [ "$1" = 'run' ]; then
   ip route --help
 
   sysctl net.ipv4.ip_forward
-  exec yarn run start:prod
+  NODE_ENV=production exec yarn run start:prod
 fi
 
 exec "$@"
