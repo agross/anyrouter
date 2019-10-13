@@ -1,15 +1,18 @@
 #!/usr/bin/env sh
 
-# set -e
+set -e
 
 if [ "$1" = 'run' ]; then
-  iptables --list --table nat --numeric
+  # Is forwarding enabled?
+  sysctl net.ipv4.ip_forward
 
+  # This should print a default gateway.
   route -n
 
-  ip route --help
+  # Firewall rules.
+  iptables --list --numeric --table nat
+  iptables --list --numeric --table filter
 
-  sysctl net.ipv4.ip_forward
   NODE_ENV=production exec yarn run start:prod
 fi
 
