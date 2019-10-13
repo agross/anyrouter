@@ -6,7 +6,9 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     volumes:
-      - redis-data:/data
+      - type: volume
+        source: redis-data
+        target: /data
     healthcheck:
       test: redis-cli -h localhost ping | grep -xq PONG || exit 1
       start_period: 5s
@@ -21,7 +23,13 @@ services:
     network_mode: host
     privileged: true
     volumes:
-      - dnsmasq-leases:/dnsmasq-leases
+      - type: volume
+        source: dnsmasq-leases
+        target: /dnsmasq-leases
+      - type: bind
+        source: ./dnsmasq/conf.d
+        target: /etc/dnsmasq.d
+        read_only: true
 
   app:
     image: agross/anyrouter

@@ -13,6 +13,4 @@ RUN apk add \
         --no-cache \
         dnsmasq
 
-COPY conf.d/*.conf /etc/dnsmasq.d/
-
 CMD [ "dnsmasq", "--no-daemon" ]
