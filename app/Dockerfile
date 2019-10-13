@@ -19,10 +19,21 @@ RUN apk add \
 
 COPY docker-entypoint /
 
+ENV NODE_ENV production
+
 WORKDIR /app
 # Speed up development.
 COPY [ "package.json", "yarn.lock", "./" ]
-RUN yarn install
+RUN apk add \
+        --no-cache \
+        --virtual .gyp \
+        python \
+        make \
+        g++ \
+  && yarn install \
+          --production \
+          --frozen-lockfile \
+  && apk del .gyp
 
 COPY . .
 RUN yarn run build

@@ -13,7 +13,7 @@ if [ "$1" = 'run' ]; then
   iptables --list --numeric --table nat
   iptables --list --numeric --table filter
 
-  NODE_ENV=production exec yarn run start:prod
+  exec yarn run start:prod
 fi
 
 exec "$@"

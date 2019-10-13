@@ -1,8 +1,8 @@
 {
-  "name": "router",
-  "version": "0.0.1",
+  "name": "anyrouter",
+  "version": "1.0.0",
   "description": "",
-  "author": "",
+  "author": "Alexander Groß <agross@therightstuff.de>",
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^16.1.7",
+    "@nestjs/cli": "^6.10.2",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
@@ -36,7 +37,6 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^6.9.0",
     "@nestjs/schematics": "^6.7.0",
     "@nestjs/testing": "^6.7.1",
     "@types/bull": "^3.10.3",
