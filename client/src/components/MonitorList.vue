@@ -22,6 +22,11 @@ import { Socket } from 'vue-socket.io-extended';
 export default class MonitorList extends Vue {
   private events: { [key: string]: any } = {};
 
+  @Socket()
+  private connect() {
+    this.events = {};
+  }
+
   @Socket('events')
   private receivedEvent(event: any) {
     event.timestamp = new Date(event.timestamp);
