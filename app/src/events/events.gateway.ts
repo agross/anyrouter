@@ -10,7 +10,7 @@ import { Server } from 'ws';
 import { Queue, JobId } from 'bull';
 import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 import { SetDefaultGateway } from './models/set-default-gateway';
-import { Event, EventStatus } from './models/event';
+import { Event, EventStatus, EventError } from './models/event';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { ConfigService } from '../config/config.service';
@@ -44,10 +44,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         status: EventStatus.Failed,
         data: job.data,
         timestamp: job.finishedOn,
-        error: job.stacktrace.reduce(
-          (acc, line) => acc.concat(line.split('\n')),
-          []
-        )
+        error: new EventError(job)
       });
 
       await job.remove();
@@ -60,8 +57,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         status: EventStatus.Successful,
         data: job.data,
         timestamp: job.finishedOn,
-        result: job.returnvalue,
-        error: []
+        result: job.returnvalue
       });
 
       await job.remove();
