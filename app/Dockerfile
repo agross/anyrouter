@@ -1,3 +1,15 @@
+FROM node:alpine AS build
+
+COPY [ "package.json", "yarn.lock", "./" ]
+RUN apk add \
+        --no-cache \
+        python \
+        make \
+        g++ \
+    && yarn install \
+            --production \
+            --frozen-lockfile
+
 FROM node:alpine
 LABEL name='anyrouter'
 LABEL version='1.0.0'
@@ -22,20 +34,8 @@ COPY docker-entypoint /
 ENV NODE_ENV production
 
 WORKDIR /app
-# Speed up development.
-COPY [ "package.json", "yarn.lock", "./" ]
-RUN apk add \
-        --no-cache \
-        --virtual .gyp \
-        python \
-        make \
-        g++ \
-  && yarn install \
-          --production \
-          --frozen-lockfile \
-  && apk del \
-         --no-cache \
-         .gyp
+# Speed up development by installing packages in a separate container.
+COPY --from=build [ "node_modules", "./" ]
 
 COPY . .
 RUN yarn run build
