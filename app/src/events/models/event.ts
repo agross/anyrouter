@@ -1,4 +1,4 @@
-import { Job } from "bull";
+import { Job } from 'bull';
 
 export enum EventStatus {
   Successful = 'successful',
@@ -10,11 +10,11 @@ export class EventError {
   reason: string;
   stacktrace: string[];
 
-  constructor(job: Job){
+  constructor(job: Job) {
     this.stacktrace = job.stacktrace.reduce(
       (acc, line) => acc.concat(line.split('\n')),
       []
-      );
+    );
     this.reason = this.stacktrace[0];
   }
 }
