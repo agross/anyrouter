@@ -1,14 +1,31 @@
-FROM node:alpine AS build
+FROM node:alpine AS server
 
-COPY [ "package.json", "yarn.lock", "./" ]
+WORKDIR /server
+
 RUN apk add \
         --no-cache \
         python \
         make \
-        g++ \
-    && yarn install \
-            --production \
-            --frozen-lockfile
+        g++
+
+COPY [ "server/package.json", "server/yarn.lock", "./" ]
+RUN yarn install \
+         --production \
+         --frozen-lockfile
+
+COPY server/ .
+RUN yarn run build
+
+FROM node:alpine AS client
+
+WORKDIR /client
+
+COPY [ "client/package.json", "client/yarn.lock", "./" ]
+RUN yarn install \
+         --frozen-lockfile
+
+COPY client/ .
+RUN yarn run build
 
 FROM node:alpine
 LABEL name='anyrouter'
@@ -17,6 +34,10 @@ LABEL maintainer='Alexander Groß <agross@therightstuff.de>'
 
 # The image is supposed to be used with --net=host, so this will not matter.
 EXPOSE 3000
+
+COPY docker-entypoint /
+
+ENV NODE_ENV production
 
 ENTRYPOINT [ "/docker-entypoint" ]
 CMD [ "run" ]
@@ -29,13 +50,7 @@ RUN apk add \
         --no-cache \
         iptables
 
-COPY docker-entypoint /
-
-ENV NODE_ENV production
-
 WORKDIR /app
-# Speed up development by installing packages in a separate container.
-COPY --from=build [ "node_modules", "./" ]
-
-COPY . .
-RUN yarn run build
+# Speed up development by building in separate containers.
+COPY --from=server [ "/server", "./" ]
+COPY --from=client [ "/client/dist", "./client/" ]

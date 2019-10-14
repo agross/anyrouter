@@ -47,7 +47,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         error: new EventError(job)
       });
 
-      await job.remove();
+      // await job.remove();
     });
 
     this.queue.on(BullQueueGlobalEvents.COMPLETED, async id => {
@@ -60,7 +60,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         result: job.returnvalue
       });
 
-      await job.remove();
+      // await job.remove();
     });
 
     this.queue.on(BullQueueGlobalEvents.STALLED, async id => {
@@ -75,7 +75,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         error: new EventError(job)
       });
 
-      await job.remove();
+      // await job.remove();
     });
   }
 

@@ -1,8 +1,8 @@
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import * as path from 'path';
-import * as ping from 'net-ping';
 import * as dns from 'dns';
+import * as ping from 'net-ping';
 
 export default async function(job: Job) {
   const logger = new Logger(
@@ -13,16 +13,16 @@ export default async function(job: Job) {
   const ip = await new Promise((resolve, reject) =>
     dns.lookup(job.data.host, (error, address) => {
       if (error) {
-        logger.error(`${job.data.host}: ${error}`);
+        logger.error(`${job.data.host}: IP ${error}`);
         reject(error);
       } else {
-        logger.debug(`${job.data.host}: ${address}`);
+        logger.debug(`${job.data.host}: IP ${address}`);
         resolve(address);
       }
     })
   );
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const options = {
       retries: 0,
       _debug: false
@@ -30,7 +30,9 @@ export default async function(job: Job) {
 
     const session = ping.createSession(options);
     session.on('error', (error: Error) => {
-      logger.error(error);
+      logger.error(
+        `${job.data.host} (${ip}): ${JSON.stringify(error, null, 2)}`
+      );
       reject(error);
       session.close();
     });
@@ -42,7 +44,7 @@ export default async function(job: Job) {
 
         if (error) {
           logger.error(
-            `${job.data.host}: IP ${ip} ${JSON.stringify(error, null, 2)}`
+            `${job.data.host} (${ip}) ${JSON.stringify(error, null, 2)}`
           );
           reject(error);
         } else {
