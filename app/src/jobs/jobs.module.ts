@@ -17,15 +17,20 @@ export class JobsModule {
         return {
           name: path.basename(fn, path.extname(fn)),
           path: fn,
-          concurrency: 2
+          concurrency: 1
         };
       });
 
-    this.logger.log(`Queue processors: ${JSON.stringify(processors, null, 2)}`);
+    this.logger.debug(
+      `Queue processors: ${JSON.stringify(processors, null, 2)}`
+    );
 
     const queue = BullModule.register({
       name: 'store',
       options: {
+        settings: {
+          maxStalledCount: 0
+        },
         redis: {
           port: 6379
         }
