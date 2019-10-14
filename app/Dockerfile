@@ -25,7 +25,8 @@ RUN yarn install \
          --frozen-lockfile
 
 COPY client/ .
-RUN yarn run build
+RUN yarn run build && \
+    yarn run favicon
 
 FROM node:alpine
 LABEL name='anyrouter'
