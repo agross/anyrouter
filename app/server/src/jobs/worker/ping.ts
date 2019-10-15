@@ -1,5 +1,6 @@
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
+import * as util from 'util';
 import * as path from 'path';
 import * as dns from 'dns';
 import * as ping from 'net-ping';
@@ -10,17 +11,13 @@ export default async function(job: Job) {
   );
   logger.debug(`${job.data.description} job ${job.id}`);
 
-  const ip = await new Promise((resolve, reject) =>
-    dns.lookup(job.data.host, (error, address) => {
-      if (error) {
-        logger.error(`${job.data.host}: IP ${error}`);
-        reject(error);
-      } else {
-        logger.debug(`${job.data.host}: IP ${address}`);
-        resolve(address);
-      }
-    })
-  );
+  try {
+    var ip: dns.LookupAddress = await util.promisify(dns.lookup)(job.data.host);
+    logger.debug(`${job.data.host}: IP ${ip.address}`);
+  } catch (error) {
+    logger.error(`${job.data.host}: IP ${error}`);
+    throw error;
+  }
 
   return new Promise((resolve, reject) => {
     const options = {
@@ -31,20 +28,20 @@ export default async function(job: Job) {
     const session = ping.createSession(options);
     session.on('error', (error: Error) => {
       logger.error(
-        `${job.data.host} (${ip}): ${JSON.stringify(error, null, 2)}`
+        `${job.data.host} (${ip.address}): ${JSON.stringify(error, null, 2)}`
       );
       reject(error);
       session.close();
     });
 
     session.pingHost(
-      ip,
+      ip.address,
       (error: Error, _target: string, sent: number, received: number) => {
         session.close();
 
         if (error) {
           logger.error(
-            `${job.data.host} (${ip}) ${JSON.stringify(error, null, 2)}`
+            `${job.data.host} (${ip.address}) ${JSON.stringify(error, null, 2)}`
           );
           reject(error);
         } else {
