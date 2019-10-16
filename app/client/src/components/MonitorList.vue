@@ -2,23 +2,21 @@
   <section>
     <h3><font-awesome-icon icon="check-double" /> Monitors</h3>
     <ul>
-      <MonitorListItem v-for="event of events"
-                       v-bind:key="event.data.description"
-                       :subscribe="event"></MonitorListItem>
+      <component v-for="event of events"
+                 :key="event.data.description + 'f'"
+                 :is="monitorFor(event.type)"
+                 :subscribe="event"></component>
     </ul>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import MonitorListItem from './MonitorListItem.vue';
 import { Socket } from 'vue-socket.io-extended';
+import Timing from './monitors/Timing.vue';
+import StaticValue from './monitors/StaticValue.vue';
 
-@Component({
-  components: {
-    MonitorListItem,
-  },
-})
+@Component({})
 export default class MonitorList extends Vue {
   private events: { [key: string]: any } = {};
 
@@ -36,6 +34,10 @@ export default class MonitorList extends Vue {
     }
 
     Vue.set(this.events, event.type + event.data.description, event);
+  }
+
+  private monitorFor(event: any) {
+    return [StaticValue, Timing].find(m => m.canHandle(event));
   }
 }
 </script>

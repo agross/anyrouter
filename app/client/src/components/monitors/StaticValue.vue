@@ -3,10 +3,7 @@
     <font-awesome-icon :icon="icon"
                        :spin="running"/>
     {{ latest.data.description }}
-    <sparkline>
-      <sparklineLine :data="rttData" :limit="20" :styles="rttGraphStyle" />
-      <sparklineBar :data="errors" :limit="20" :min="0" :max="1" :styles="errorBarStyle" />
-    </sparkline>
+    {{ latest }}
   </li>
 </template>
 
@@ -15,14 +12,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Socket } from 'vue-socket.io-extended';
 
 @Component
-export default class MonitorListItem extends Vue {
+export default class StaticValue extends Vue {
+  public static canHandle(eventType: string): boolean {
+    return eventType !== 'ping';
+  }
+
   @Prop({ required: true }) private subscribe!: any;
 
-  private events: any[] = [];
+  private _latest: any;
   private connected = true;
 
   private mounted() {
-    this.events.push(this.subscribe);
+    this._latest = this.subscribe;
   }
 
   @Socket()
@@ -44,38 +45,7 @@ export default class MonitorListItem extends Vue {
 
     event.timestamp = new Date(event.timestamp);
 
-    this.events.push(event);
-  }
-
-  private get rttData(): number[] {
-    return this.events
-      .filter(e => e.status !== 'running')
-      .map(e => {
-        if (e.status === 'successful') {
-          return (e.result || {}).rtt;
-        }
-        return 0;
-      });
-  }
-
-  private get rttGraphStyle() {
-    return {
-      stroke: '#54a5ff',
-      strokeWidth: 2,
-    };
-  }
-
-  private get errors() {
-    return this.events
-      .filter(e => e.status !== 'running')
-      .map(e => e.status === 'failed' ? 1 : -1);
-  }
-
-  private get errorBarStyle() {
-    return {
-      fill: '#d14',
-      fillOpacity: 0.3,
-    };
+    this._latest = event;
   }
 
   private get running() {
@@ -88,7 +58,7 @@ export default class MonitorListItem extends Vue {
   }
 
   private get latest() {
-    return this.events.slice(-1)[0] || this.subscribe;
+    return this._latest || this.subscribe;
   }
 }
 </script>
