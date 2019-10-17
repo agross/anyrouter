@@ -18,9 +18,21 @@ export class JobsService implements OnModuleInit {
       [
         'get-default-gateway',
         { description: 'Default Gateway' },
-        { repeat: { every: 10000 } }
+        {
+          repeat: { every: 10000 },
+          removeOnComplete: 1,
+          removeOnFail: 20
+        }
       ],
-      ['public-ip', { description: 'Public IP' }, { repeat: { every: 60000 } }]
+      [
+        'public-ip',
+        { description: 'Public IP' },
+        {
+          repeat: { every: 60000 },
+          removeOnComplete: 1,
+          removeOnFail: 20
+        }
+      ]
     ]);
 
     await this.schedule(jobs);
@@ -49,7 +61,12 @@ export class JobsService implements OnModuleInit {
       .map((host, index) => [
         'ping',
         { description: `Ping ${host.description}`, host: host.host },
-        { repeat: { every: 5000 + index } }
+        {
+          repeat: { every: 5000 + index },
+          removeOnComplete: 1,
+          removeOnFail: 20,
+          timeout: 5000
+        } as JobOptions
       ]);
   }
 
