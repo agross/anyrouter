@@ -4,7 +4,7 @@
     <ul>
       <MonitorListItem v-for="event of events"
                        v-bind:key="event.data.description"
-                       :event="event"></MonitorListItem>
+                       :subscribe="event"></MonitorListItem>
     </ul>
   </section>
 </template>
@@ -29,16 +29,21 @@ export default class MonitorList extends Vue {
 
   @Socket('events')
   private receivedEvent(event: any) {
-    event.timestamp = new Date(event.timestamp);
-    const existing = this.events[event.type + event.data.description] || {};
-    const extended = Object.assign({}, existing, event);
-    if (extended.status === 'running') {
-      extended.status += ' ' + existing.status;
+    const existing = this.events[event.type + event.data.description];
+
+    if (existing) {
+      return;
     }
-    Vue.set(this.events, event.type + event.data.description, extended);
+
+    Vue.set(this.events, event.type + event.data.description, event);
   }
 }
 </script>
 
 <style scoped lang="scss">
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
 </style>

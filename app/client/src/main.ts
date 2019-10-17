@@ -35,6 +35,9 @@ function createSocket() {
 
 Vue.use(VueSocketIOExt, createSocket());
 
+import Sparkline from 'vue-sparklines';
+Vue.use(Sparkline);
+
 Vue.config.productionTip = false;
 
 new Vue({

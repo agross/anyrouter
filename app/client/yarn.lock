@@ -7295,6 +7295,13 @@ vue-socket.io-extended@^4.0.0:
   dependencies:
     "@types/socket.io-client" "1.4.32"
 
+vue-sparklines@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/vue-sparklines/-/vue-sparklines-0.1.9.tgz#9f808d87cdaf56823a37d2889aba2b4b3b6487df"
+  integrity sha512-iDMogBrvKwqtTwXYPxkX2J0xJiwqZ4b6n7jmroETjsRZWF3DfWjTyxI8r3Oex5lfRThIYdioSBDR0bK3gWezgA==
+  dependencies:
+    vue "^2.2.1"
+
 vue-style-loader@^4.1.0:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/vue-style-loader/-/vue-style-loader-4.1.2.tgz#dedf349806f25ceb4e64f3ad7c0a44fba735fcf8"
@@ -7316,7 +7323,7 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue@^2.6.10:
+vue@^2.2.1, vue@^2.6.10:
   version "2.6.10"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
