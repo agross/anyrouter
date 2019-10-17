@@ -1,9 +1,8 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { OnModuleInit, Logger } from '@nestjs/common';
 import { Queue, JobOptions } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { ConfigService } from '../config/config.service';
 
-@Injectable()
 export class JobsService implements OnModuleInit {
   private readonly logger = new Logger(JobsService.name);
 

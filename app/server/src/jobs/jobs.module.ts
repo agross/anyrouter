@@ -1,11 +1,9 @@
-import { Module, DynamicModule, Global, Logger } from '@nestjs/common';
+import { Module, DynamicModule, Logger } from '@nestjs/common';
 import { BullModule, BullQueueAdvancedSeparateProcessor } from 'nest-bull';
-import { JobsService } from './jobs.service';
 import * as path from 'path';
 import * as glob from 'glob';
 import { ConfigModule } from '../config/config.module';
 
-@Global()
 @Module({})
 export class JobsModule {
   private static readonly logger = new Logger(JobsModule.name);
@@ -41,7 +39,7 @@ export class JobsModule {
     return {
       module: JobsModule,
       imports: [queue, ConfigModule],
-      providers: [JobsService],
+      providers: [],
       exports: [queue]
     };
   }
