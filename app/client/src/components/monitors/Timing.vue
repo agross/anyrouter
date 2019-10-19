@@ -1,98 +1,87 @@
 <template>
-  <li :class="[latest.status]">
-    <font-awesome-icon :icon="icon"
-                       :spin="running"/>
-    {{ latest.data.description }}
-    <sparkline>
-      <sparklineLine :data="rttData" :limit="20" :styles="rttGraphStyle" />
-      <sparklineBar :data="errors" :limit="20" :min="0" :max="1" :styles="errorBarStyle" />
+  <li :class="[latestEvent.status]">
+    <div>
+      <font-awesome-icon :icon="icon"
+                         :spin="running"/>
+      {{ latestEvent.data.description }}
+    </div>
+    <sparkline :indicatorStyles="indicatorStyles"
+               :tooltipProps="tooltipProps">
+      <sparklineBar :data="errors"
+                    :limit="20"
+                    :min="0"
+                    :max="1"
+                    :styles="errorBarStyle" />
+      <sparklineCurve :data="rttData"
+                      :limit="20"
+                      refLineType="avg"
+                      :refLineStyles="rttRefLineStyles"
+                      :styles="rttGraphStyle" />
     </sparkline>
   </li>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Prop, Vue } from 'vue-property-decorator';
+import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
+import Monitor from './Monitor.vue';
 
-@Component
-export default class Timing extends Vue {
+@Component({})
+export default class Timing extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
     return eventType === 'ping';
   }
 
-  @Prop({ required: true }) private subscribe!: any;
-
-  private events: any[] = [];
-  private connected = true;
-
-  private mounted() {
-    this.events.push(this.subscribe);
-  }
-
-  @Socket()
-  private connect() {
-    this.connected = true;
-  }
-
-  @Socket()
-  private disconnect() {
-    this.connected = false;
-  }
-
-  @Socket('events')
-  private receivedEvent(event: any) {
-    if (!(this.subscribe.type === event.type &&
-        this.subscribe.data.description === event.data.description)) {
-      return;
-    }
-
-    event.timestamp = new Date(event.timestamp);
-
-    this.events.push(event);
-  }
-
   private get rttData(): number[] {
-    return this.events
-      .filter(e => e.status !== 'running')
+    return this.dataEvents
       .map(e => {
         if (e.status === 'successful') {
-          return (e.result || {}).rtt;
+          return e.result.rtt;
         }
         return 0;
       });
   }
 
+  private get rttRefLineStyles() {
+    return {
+      stroke: 'rgb(44, 62, 80)',
+      strokeOpacity: .8,
+      strokeDasharray: '2, 2',
+    };
+  }
+
   private get rttGraphStyle() {
     return {
-      stroke: '#54a5ff',
+      stroke: 'green',
       strokeWidth: 2,
     };
   }
 
   private get errors() {
-    return this.events
-      .filter(e => e.status !== 'running')
+    return this.dataEvents
       .map(e => e.status === 'failed' ? 1 : -1);
   }
 
   private get errorBarStyle() {
     return {
-      fill: '#d14',
-      fillOpacity: 0.3,
+      fill: 'red',
+      fillOpacity: 0.8,
     };
   }
 
-  private get running() {
-    return this.connected &&
-           this.latest.status.indexOf('running') !== -1;
+  private get indicatorStyles() {
+    return {
+      stroke: '#000',
+    };
   }
 
-  private get icon() {
-    return this.connected ? 'circle-notch' : 'plug';
-  }
-
-  private get latest() {
-    return this.events.slice(-1)[0] || this.subscribe;
+  private get tooltipProps() {
+    return {
+      formatter(val: any) {
+        return `<span>${val.value}ms</span>`;
+      },
+    };
   }
 }
 </script>

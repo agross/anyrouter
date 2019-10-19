@@ -15,6 +15,7 @@
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
+    "vue-mixin-decorator": "^1.2.0",
     "vue-property-decorator": "^8.1.0",
     "vue-socket.io-extended": "^4.0.0",
     "vue-sparklines": "^0.1.9"

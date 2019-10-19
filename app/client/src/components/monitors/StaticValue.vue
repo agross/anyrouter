@@ -1,64 +1,29 @@
 <template>
-  <li :class="[latest.status]">
-    <font-awesome-icon :icon="icon"
-                       :spin="running"/>
-    {{ latest.data.description }}
-    {{ latest }}
+  <li :class="[latestEvent.status]">
+    <div>
+      <font-awesome-icon :icon="icon"
+                         :spin="running"/>
+      {{ latestEvent.data.description }}
+    </div>
+    <div v-if="latestDataEvent && latestDataEvent.error">
+      {{ latestDataEvent.error.reason }}
+    </div>
+    <div v-if="latestDataEvent && latestDataEvent.result">
+      {{ latestDataEvent.result.ip }}
+    </div>
   </li>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Prop, Vue } from 'vue-property-decorator';
+import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
+import Monitor from './Monitor.vue';
 
-@Component
-export default class StaticValue extends Vue {
+@Component({})
+export default class StaticValue extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
     return eventType !== 'ping';
-  }
-
-  @Prop({ required: true }) private subscribe!: any;
-
-  private _latest: any;
-  private connected = true;
-
-  private mounted() {
-    this._latest = this.subscribe;
-  }
-
-  @Socket()
-  private connect() {
-    this.connected = true;
-  }
-
-  @Socket()
-  private disconnect() {
-    this.connected = false;
-  }
-
-  @Socket('events')
-  private receivedEvent(event: any) {
-    if (!(this.subscribe.type === event.type &&
-        this.subscribe.data.description === event.data.description)) {
-      return;
-    }
-
-    event.timestamp = new Date(event.timestamp);
-
-    this._latest = event;
-  }
-
-  private get running() {
-    return this.connected &&
-           this.latest.status.indexOf('running') !== -1;
-  }
-
-  private get icon() {
-    return this.connected ? 'circle-notch' : 'plug';
-  }
-
-  private get latest() {
-    return this._latest || this.subscribe;
   }
 }
 </script>

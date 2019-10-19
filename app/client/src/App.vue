@@ -21,15 +21,18 @@ export default class App extends Vue {}
 </script>
 
 <style lang="scss">
-#app {
+body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
   color: #2c3e50;
   margin-top: 60px;
   margin-left: auto;
   margin-right: auto;
-  width: 200px;
+  width: 400px;
 }
 
 h1 {
