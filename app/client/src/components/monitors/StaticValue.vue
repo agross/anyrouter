@@ -23,7 +23,7 @@ import Monitor from './Monitor.vue';
 @Component({})
 export default class StaticValue extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
-    return eventType !== 'ping';
+    return true;
   }
 }
 </script>

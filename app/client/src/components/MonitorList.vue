@@ -15,6 +15,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Socket } from 'vue-socket.io-extended';
 import Timing from './monitors/Timing.vue';
 import StaticValue from './monitors/StaticValue.vue';
+import SpeedTest from './monitors/SpeedTest.vue';
 
 @Component({})
 export default class MonitorList extends Vue {
@@ -37,7 +38,7 @@ export default class MonitorList extends Vue {
   }
 
   private monitorFor(event: any) {
-    return [StaticValue, Timing].find(m => m.canHandle(event));
+    return [Timing, SpeedTest, StaticValue].find(m => m.canHandle(event));
   }
 }
 </script>

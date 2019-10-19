@@ -28,9 +28,14 @@ export class JobsService implements OnModuleInit {
         'public-ip',
         { description: 'Public IP' },
         {
-          repeat: { every: 60000 },
-          removeOnComplete: 1,
-          removeOnFail: 20
+          repeat: { every: 60000 }
+        }
+      ],
+      [
+        'speed-test',
+        { description: 'Speedtest' },
+        {
+          repeat: { every: 60000 }
         }
       ]
     ]);
