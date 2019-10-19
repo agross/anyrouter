@@ -12,8 +12,6 @@ export class JobsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    this.clearAllJobs();
-
     const jobs = this.getPingJobs().concat([
       [
         'get-default-gateway',
@@ -44,14 +42,6 @@ export class JobsService implements OnModuleInit {
     this.logger.log(
       `${JSON.stringify(jobs, null, 2)}\n${allJobs.length} jobs ready`
     );
-  }
-
-  private clearAllJobs() {
-    this.queue.clean(0, 'delayed');
-    this.queue.clean(0, 'wait');
-    this.queue.clean(0, 'active');
-    this.queue.clean(0, 'completed');
-    this.queue.clean(0, 'failed');
   }
 
   private getPingJobs(): [string, any, JobOptions][] {

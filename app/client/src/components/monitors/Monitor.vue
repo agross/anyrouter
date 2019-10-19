@@ -6,12 +6,14 @@ import { Socket } from 'vue-socket.io-extended';
 @Mixin({})
 export default class Monitor extends Vue {
   private connected = true;
-  private events: any[] = [];
+  private MAX_EVENTS = 40;
 
-  @Prop({ required: true }) private subscribe!: any;
+  @Prop({ required: true }) private events!: any[];
 
   protected get dataEvents() {
-    return this.allEvents.filter(e => e.status !== 'running');
+    return this.events
+    .filter(e => e.status !== 'running')
+    .slice(-1 * this.MAX_EVENTS);
   }
 
   protected get latestDataEvent(): any {
@@ -19,28 +21,16 @@ export default class Monitor extends Vue {
   }
 
   protected get latestEvent(): any {
-    return this.allEvents.slice(-1)[0];
+    return this.events.slice(-1)[0];
   }
 
   protected get running() {
     return this.connected &&
-           this.latestEvent.status.indexOf('running') !== -1;
+           this.latestEvent.status === 'running';
   }
 
   protected get icon() {
     return this.connected ? 'circle-notch' : 'plug';
-  }
-
-  private mounted() {
-    this.events.push(this.subscribe);
-  }
-
-  private get allEvents() {
-    if (this.events.length > 0) {
-      return this.events;
-    }
-
-    return [this.subscribe];
   }
 
   @Socket()
@@ -55,25 +45,20 @@ export default class Monitor extends Vue {
 
   @Socket('events')
   private receivedEvent(event: any) {
-    if (!this.subscribedTo(event)) {
+    if (!this.shouldListenTo(event)) {
       return;
     }
 
     this.addEvent(event);
   }
 
-  private subscribedTo(event: any) {
-    return this.subscribe.type === event.type &&
-           this.subscribe.data.description === event.data.description;
+  private shouldListenTo(event: any): boolean {
+    return this.latestEvent.type === event.type &&
+           this.latestEvent.data.description === event.data.description;
   }
 
   private addEvent(event: any) {
-    event.timestamp = new Date(event.timestamp);
     this.events.push(event);
-
-    if (this.events.length > 40) {
-      this.events.shift();
-    }
   }
 }
 </script>

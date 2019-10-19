@@ -2,10 +2,10 @@
   <section>
     <h3><font-awesome-icon icon="check-double" /> Monitors</h3>
     <ul>
-      <component v-for="event of events"
-                 :key="event.data.description + 'f'"
-                 :is="monitorFor(event.type)"
-                 :subscribe="event"></component>
+      <component v-for="(events, key) of events"
+                 :key="key"
+                 :is="monitorFor(events)"
+                 :events="events"></component>
     </ul>
   </section>
 </template>
@@ -19,25 +19,35 @@ import SpeedTest from './monitors/SpeedTest.vue';
 
 @Component({})
 export default class MonitorList extends Vue {
-  private events: { [key: string]: any } = {};
+  private events: { [key: string]: any[] } = {};
 
-  @Socket()
-  private connect() {
-    this.events = {};
+  @Socket('eventHistory')
+  private eventHistory(events: any[]) {
+    this.addEvents(false, ...events);
   }
 
   @Socket('events')
-  private receivedEvent(event: any) {
-    const existing = this.events[event.type + event.data.description];
-
-    if (existing) {
-      return;
-    }
-
-    Vue.set(this.events, event.type + event.data.description, event);
+  private event(event: any) {
+    this.addEvents(true, event);
   }
 
-  private monitorFor(event: any) {
+  private addEvents(onlyNewTypes = false, ...events: any[]) {
+    events.forEach(event => {
+      const key = `${event.type} ${event.data.description}`;
+
+      if (onlyNewTypes && this.events[key]) {
+        return;
+      }
+
+      const arr = this.events[key] || [];
+      arr.push(event);
+      Vue.set(this.events, key, arr);
+    });
+  }
+
+  private monitorFor(events: any[]) {
+    const event = events[0].type;
+
     return [Timing, SpeedTest, StaticValue].find(m => m.canHandle(event));
   }
 }

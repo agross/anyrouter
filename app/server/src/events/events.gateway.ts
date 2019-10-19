@@ -10,7 +10,7 @@ import { Server } from 'ws';
 import { Queue, JobId } from 'bull';
 import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
 import { SetDefaultGateway } from './models/set-default-gateway';
-import { Event, EventStatus, EventError } from './models/event';
+import { Event } from './models/event';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { ConfigService } from '../config/config.service';
@@ -26,62 +26,33 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     @InjectQueue('store') readonly queue: Queue
   ) {}
 
-  afterInit(server: any) {
+  afterInit(_server: any) {
     this.queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
       const job = await this.queue.getJob(id);
-      this.onEvent({
-        type: job.name,
-        status: EventStatus.Running,
-        data: job.data,
-        timestamp: job.processedOn
-      });
+      this.onEvent(await Event.fromJob(job));
     });
 
     this.queue.on(BullQueueGlobalEvents.FAILED, async id => {
       const job = await this.queue.getJob(id);
-      this.onEvent({
-        type: job.name,
-        status: EventStatus.Failed,
-        data: job.data,
-        timestamp: job.finishedOn,
-        error: new EventError(job)
-      });
-
-      // await job.remove();
+      this.onEvent(await Event.fromJob(job));
     });
 
     this.queue.on(BullQueueGlobalEvents.COMPLETED, async id => {
       const job = await this.queue.getJob(id);
-      this.onEvent({
-        type: job.name,
-        status: EventStatus.Successful,
-        data: job.data,
-        timestamp: job.finishedOn,
-        result: job.returnvalue
-      });
-
-      // await job.remove();
+      this.onEvent(await Event.fromJob(job));
     });
 
     this.queue.on(BullQueueGlobalEvents.STALLED, async id => {
       this.logger.error(`Job ${id} stalled`);
-
       const job = await this.queue.getJob(id);
-      this.onEvent({
-        type: job.name,
-        status: EventStatus.Failed,
-        data: job.data,
-        timestamp: new Date(),
-        error: new EventError(job)
-      });
-
-      // await job.remove();
+      this.onEvent(await Event.fromJob(job));
     });
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket, ..._args: any[]) {
     this.logger.log(`New client connected ${client.client.id}`);
     client.emit('gateways', this.config.gateways);
+    client.emit('eventHistory', await this.getEventHistory());
   }
 
   @SubscribeMessage('setDefaultGateway')
@@ -101,5 +72,14 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   @SubscribeMessage('events')
   onEvent(data: Event) {
     this.server.emit('events', data);
+  }
+
+  private async getEventHistory(): Promise<Event[]> {
+    const jobs = (await this.queue.getJobs(['completed', 'failed' ], undefined, undefined, true))
+      .map(async job => await Event.fromJob(job));
+
+
+      this.logger.log(`${jobs.length} completed and failed events from history`);
+      return Promise.all(jobs).then(events => events.sort((left, right) => left.timestamp - right.timestamp));
   }
 }

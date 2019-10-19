@@ -7,13 +7,16 @@
     </div>
     <sparkline :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps">
+
       <sparklineBar :data="errors"
-                    :limit="20"
+                    :limit="errors.length"
                     :min="0"
                     :max="1"
+                    :margin="1"
                     :styles="errorBarStyle" />
       <sparklineCurve :data="rttData"
-                      :limit="20"
+                      :limit="rttData.length"
+                      :min="0"
                       refLineType="avg"
                       :refLineStyles="rttRefLineStyles"
                       :styles="rttGraphStyle" />
@@ -25,6 +28,7 @@
 import { Prop, Vue } from 'vue-property-decorator';
 import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
+import * as moment from 'moment';
 import Monitor from './Monitor.vue';
 
 @Component({})
@@ -66,7 +70,7 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
   private get errorBarStyle() {
     return {
       fill: 'red',
-      fillOpacity: 0.8,
+      fillOpacity: 0.5,
     };
   }
 
@@ -77,9 +81,27 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
   }
 
   private get tooltipProps() {
+    const that = this;
+
     return {
       formatter(val: any) {
-        return `<span>${val.value}ms</span>`;
+        const event = that.dataEvents[val.index];
+
+        let message;
+        if (event.status === 'successful') {
+          message = `🕒 ${val.value}ms`;
+        } else {
+          const err = event.error && event.error.reason;
+
+          message = `❌ ${err}`;
+        }
+
+        const ts = moment.default(event.timestamp);
+
+        return `<span>
+              ${message}<br>
+              ${ts.fromNow()}
+            </span>`;
       },
     };
   }
