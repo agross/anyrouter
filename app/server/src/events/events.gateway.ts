@@ -90,17 +90,10 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   ): Promise<JobId> {
     this.logger.log(`Setting ${message.gateway} as default gateway`);
 
-    const job = await this.queue.add(
-      'set-default-gateway',
-      {
-        description: 'Set default gateway',
-        gateway: message.gateway
-      },
-      {
-        removeOnComplete: 1,
-        removeOnFail: 20
-      }
-    );
+    const job = await this.queue.add('set-default-gateway', {
+      description: 'Set default gateway',
+      gateway: message.gateway
+    });
 
     return job.id;
   }

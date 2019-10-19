@@ -3,6 +3,7 @@ import { BullModule, BullQueueAdvancedSeparateProcessor } from 'nest-bull';
 import * as path from 'path';
 import * as glob from 'glob';
 import { ConfigModule } from '../config/config.module';
+import { JobsService } from './jobs.service';
 
 @Module({})
 export class JobsModule {
@@ -39,7 +40,7 @@ export class JobsModule {
     return {
       module: JobsModule,
       imports: [queue, ConfigModule],
-      providers: [],
+      providers: [JobsService],
       exports: [queue]
     };
   }

@@ -19,9 +19,7 @@ export class JobsService implements OnModuleInit {
         'get-default-gateway',
         { description: 'Default Gateway' },
         {
-          repeat: { every: 10000 },
-          removeOnComplete: 1,
-          removeOnFail: 20
+          repeat: { every: 10000 }
         }
       ],
       [
@@ -67,10 +65,7 @@ export class JobsService implements OnModuleInit {
         'ping',
         { description: `Ping ${host.description}`, host: host.host },
         {
-          repeat: { every: 5000 + index },
-          removeOnComplete: 1,
-          removeOnFail: 20,
-          timeout: 5000
+          repeat: { every: 5000 + index }
         } as JobOptions
       ]);
   }
