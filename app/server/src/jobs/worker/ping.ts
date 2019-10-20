@@ -1,44 +1,7 @@
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
-import * as util from 'util';
 import * as path from 'path';
-import * as dns from 'dns';
-import * as ping from 'net-ping';
-
-const dnsLookup = util.promisify(dns.lookup);
-
-const options = {
-  retries: 0,
-  _debug: false
-};
-
-const session = ping.createSession(options);
-// session.on('error', (error: Error) => {
-//   logger.error(
-//     `${job.data.host} (${ip.address}): ${JSON.stringify(error, null, 2)}`
-//   );
-//   session.close();
-
-//   throw error;
-// });
-
-session.pingHost[util.promisify.custom] = (ip: string) => {
-  return new Promise((resolve, reject) => {
-    session.pingHost(
-      ip,
-      (error: Error, target: string, sent: number, received: number) => {
-        if (error) {
-          reject(error);
-        } else {
-          const rtt = received - sent;
-          resolve({ ip: target, rtt: rtt });
-        }
-      }
-    );
-  });
-};
-
-const pingHost = util.promisify(session.pingHost);
+import * as ping from 'ping';
 
 export default async function(job: Job) {
   const logger = new Logger(
@@ -47,23 +10,23 @@ export default async function(job: Job) {
   logger.debug(`${job.data.description} job ${job.id}`);
 
   try {
-    var ip: dns.LookupAddress = await dnsLookup(job.data.host);
-    logger.debug(`${job.data.host}: IP ${ip.address}`);
-  } catch (error) {
-    logger.error(`${job.data.host}: IP ${error}`);
-    throw error;
-  }
+    const result = await ping.promise.probe(job.data.host, {
+      timeout: 2,
+      min_reply: 1
+    });
 
-  try {
-    const result = await pingHost(ip.address);
-    logger.debug(
-      `${job.data.host} (${ip.address}) ${JSON.stringify(result, null, 2)}`
-    );
-    return result;
+    if (!result.alive) {
+      throw Error('No response');
+    }
+
+    logger.debug(`${job.data.host} ${JSON.stringify(result, null, 2)}`);
+
+    return {
+      ip: result.numeric_host,
+      rtt: result.time
+    };
   } catch (error) {
-    logger.error(
-      `${job.data.host} (${ip.address}) ${JSON.stringify(error, null, 2)}`
-    );
+    logger.error(`${job.data.host} ${JSON.stringify(error, null, 2)}`);
     throw error;
   }
 }
