@@ -1,10 +1,10 @@
 <template>
   <li :class="[latestEvent.status]">
-    <div>
+    <h4>
       <font-awesome-icon :icon="icon"
                          :spin="running"/>
       {{ latestEvent.data.description }}
-    </div>
+    </h4>
     <div v-if="latestDataEvent && latestDataEvent.error">
       {{ latestDataEvent.error.reason }}
     </div>
@@ -29,18 +29,4 @@ export default class StaticValue extends Mixins<Monitor>(Monitor) {
 </script>
 
 <style scoped lang="scss">
-li {
-  flex: 1 1 0;
-  list-style: none;
-  padding-block-start: 1rem;
-  padding-inline-start: 1rem;
-
-  &.successful svg {
-    color: green;
-  }
-
-  &.failed svg {
-    color: red;
-  }
-}
 </style>

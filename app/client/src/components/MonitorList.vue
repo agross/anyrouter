@@ -1,7 +1,7 @@
 <template>
   <section>
     <h3><font-awesome-icon icon="check-double" /> Monitors</h3>
-    <ul>
+    <ul class="monitors">
       <component v-for="(events, key) of sortedEvents"
                  :key="key"
                  :is="monitorFor(events)"
@@ -32,7 +32,7 @@ export default class MonitorList extends Vue {
     this.addEvents(true, event);
   }
 
-  private addEvents(onlyNewTypes = false, ...events: any[]) {
+  private addEvents(onlyNewTypes: boolean, ...events: any[]) {
     events.forEach(event => {
       const key = `${event.data.description}-${event.type}`;
 
@@ -58,10 +58,32 @@ export default class MonitorList extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-ul {
+<style lang="scss">
+ul.monitors {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
+
+  li {
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin-block-end: 1rem;
+    margin-inline-end: 1rem;
+    flex: 0 0 200px;
+    list-style: none;
+    padding: 1rem;
+
+    &.successful svg {
+      color: green;
+    }
+
+    &.failed svg {
+      color: red;
+    }
+  }
+
+  h4 {
+    margin: 0 0 .5rem 0;
+  }
 }
 </style>

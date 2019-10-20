@@ -1,13 +1,13 @@
 <template>
   <li :class="[latestEvent.status]">
-    <div>
+    <h4>
       <font-awesome-icon :icon="icon"
                          :spin="running"/>
       {{ latestEvent.data.description }}
-    </div>
+    </h4>
     <sparkline :indicatorStyles="indicatorStyles"
-               :tooltipProps="tooltipProps">
-
+               :tooltipProps="tooltipProps"
+               :width="200">
       <sparklineBar :data="errors"
                     :limit="errors.length"
                     :min="0"
@@ -108,19 +108,5 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
 }
 </script>
 
-<style scoped lang="scss">
-li {
-  flex: 1 1 0;
-  list-style: none;
-  padding-block-start: 1rem;
-  padding-inline-start: 1rem;
-
-  &.successful svg {
-    color: green;
-  }
-
-  &.failed svg {
-    color: red;
-  }
-}
+<style lang="scss">
 </style>
