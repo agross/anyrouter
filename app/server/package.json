@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/platform-socket.io": "^6.8.2",
     "@nestjs/websockets": "^6.8.2",
+    "array.prototype.flatmap": "^1.2.2",
     "bull": "^3.11.0",
     "bull-arena": "^2.6.4",
     "dotenv": "^8.1.0",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@nestjs/schematics": "^6.7.0",
     "@nestjs/testing": "^6.7.1",
+    "@types/array.prototype.flatmap": "^1.2.0",
     "@types/bull": "^3.10.3",
     "@types/bull-arena": "^2.6.0",
     "@types/dotenv": "^6.1.1",

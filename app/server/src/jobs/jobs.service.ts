@@ -1,5 +1,5 @@
 import { OnModuleInit, Logger } from '@nestjs/common';
-import { Queue, JobOptions, JobStatusClean } from 'bull';
+import { Queue, Job, JobOptions, JobStatusClean } from 'bull';
 import { InjectQueue } from 'nest-bull';
 import { timer } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -12,27 +12,33 @@ export class JobsService implements OnModuleInit {
 
   constructor(
     private readonly config: ConfigService,
-    @InjectQueue('store') private readonly queue: Queue
+    @InjectQueue('ping') private readonly ping: Queue,
+    @InjectQueue('get-default-gateway')
+    private readonly getDefaultGateway: Queue,
+    @InjectQueue('set-default-gateway')
+    private readonly setDefaultGateway: Queue,
+    @InjectQueue('speed-test') private readonly speedTest: Queue,
+    @InjectQueue('public-ip') private readonly publicIp: Queue
   ) {}
 
   async onModuleInit() {
-    const jobs = this.getPingJobs().concat([
+    const jobs = this.getPingJobs(this.ping).concat([
       [
-        'get-default-gateway',
+        this.getDefaultGateway,
         { description: 'Default Gateway' },
         {
           repeat: { every: 10000 }
         }
       ],
       [
-        'public-ip',
+        this.publicIp,
         { description: 'Public IP' },
         {
           repeat: { every: 60000 }
         }
       ],
       [
-        'speed-test',
+        this.speedTest,
         { description: 'Speedtest' },
         {
           repeat: { every: 60000 }
@@ -40,17 +46,28 @@ export class JobsService implements OnModuleInit {
       ]
     ]);
 
-    await this.schedule(jobs);
+    const scheduled = jobs.map(job => {
+      const [queue, data, options, ..._rest] = job;
 
-    const allJobs = await this.queue.getJobs([]);
-    this.logger.log(
-      `${JSON.stringify(jobs, null, 2)}\n${allJobs.length} jobs ready`
-    );
+      return this.schedule(queue, data, options);
+    });
 
-    this.scheduleCleanup(this.queue, this.KEEP_JOB_HISTORY);
+    await Promise.all(scheduled);
+
+    this.queues.map(q => this.scheduleCleanup(q, this.KEEP_JOB_HISTORY));
   }
 
-  private getPingJobs(): [string, any, JobOptions][] {
+  private get queues(): Queue<any>[] {
+    return [
+      this.ping,
+      this.getDefaultGateway,
+      this.setDefaultGateway,
+      this.speedTest,
+      this.publicIp
+    ];
+  }
+
+  private getPingJobs(queue: Queue<any>): [Queue<any>, any, JobOptions][] {
     // https://optimalbits.github.io/bull/#repeatable
     // "Bull is smart enough not to add the same repeatable job if the repeat
     // options are the same."
@@ -58,7 +75,7 @@ export class JobsService implements OnModuleInit {
     return this.config.pingHosts
       .concat(this.config.gateways)
       .map((host, index) => [
-        'ping',
+        queue,
         { description: `Ping ${host.description}`, host: host.host },
         {
           repeat: { every: 5000 + index }
@@ -66,26 +83,32 @@ export class JobsService implements OnModuleInit {
       ]);
   }
 
-  private schedule(jobs: [string, any, JobOptions][]) {
-    const scheduled = jobs.map(async job => {
-      const added = await this.queue.add(...(job as [string, any, JobOptions]));
+  private async schedule(
+    queue: Queue<any>,
+    data: any,
+    job: JobOptions
+  ): Promise<Job<any>> {
+    return queue.add(queue.name, data, job).then(added => {
       this.logger.log(
-        `Scheduled job ${JSON.stringify(job)} with ID ${added.id}`
+        `Scheduled job ${JSON.stringify(added)} with ID ${added.id} on ${
+          queue.name
+        }`
       );
+      return added;
     });
-
-    return Promise.all(scheduled);
   }
 
   private scheduleCleanup(queue: Queue<any>, keep: TimeSpan) {
     queue.on('cleaned', (jobs, type) =>
-      this.logger.debug(`${jobs.length} ${type} jobs cleaned`)
+      this.logger.debug(`${queue.name}: ${jobs.length} ${type} jobs cleaned`)
     );
 
     const every = TimeSpan.fromMinutes(1);
 
     this.logger.debug(
-      `Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`
+      `${
+        queue.name
+      }: Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`
     );
 
     timer(every.totalMilliseconds())
