@@ -42,4 +42,10 @@ h1 {
     color: green;
   }
 }
+
+.sparkline-tooltip {
+  .timestamp {
+    white-space: nowrap;
+  }
+}
 </style>

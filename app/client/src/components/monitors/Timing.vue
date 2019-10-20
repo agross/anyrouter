@@ -98,10 +98,10 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
 
         const ts = moment.default(event.timestamp);
 
-        return `<span>
+        return `<div>
               ${message}<br>
-              ${ts.fromNow()}
-            </span>`;
+              <span class="timestamp">${ts.fromNow()}</span>
+            </div>`;
       },
     };
   }

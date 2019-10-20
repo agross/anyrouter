@@ -121,7 +121,7 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
 
         return `<div>
             ${message}<br>
-            ${ts.fromNow()}
+            <span class="timestamp">${ts.fromNow()}</span>
           </div>`;
       },
     };
