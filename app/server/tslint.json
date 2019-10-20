@@ -5,6 +5,7 @@
     "no-unused-expression": true
   },
   "rules": {
+    "indent": [true, "spaces", 2],
     "quotemark": [true, "single"],
     "member-access": [false],
     "ordered-imports": [false],

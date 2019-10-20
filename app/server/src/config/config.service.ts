@@ -39,7 +39,7 @@ export class ConfigService {
         .description('Hosts to ping'),
       ENABLE_CORS: Joi.boolean()
         .default(false)
-        .description('Enable CORS for development')
+        .description('Enable CORS for development'),
     });
 
     const { error, value: validatedConfig } = schema.validate(envConfig);
@@ -51,10 +51,7 @@ export class ConfigService {
     return validatedConfig;
   }
 
-  private getHostDescriptions(
-    value: any,
-    _helpers: Joi.CustomHelpers
-  ): HostDescription[] {
+  private getHostDescriptions(value: any): HostDescription[] {
     return value
       .split(',')
       .filter(entry => entry.length > 0)
@@ -66,8 +63,8 @@ export class ConfigService {
         }
 
         return {
-          description: description,
-          host: host
+          description,
+          host,
         };
       });
   }
@@ -88,7 +85,7 @@ export class ConfigService {
     return (this.envConfig.GATEWAYS || []) as HostDescription[];
   }
 
-  get enableCors(): Boolean {
+  get enableCors(): boolean {
     return Boolean(this.envConfig.ENABLE_CORS);
   }
 }

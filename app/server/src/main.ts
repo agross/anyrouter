@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const logger = new Logger(__filename);
   logger.log(
-    `Listening on port ${config.httpPort}, CORS: ${config.enableCors}`
+    `Listening on port ${config.httpPort}, CORS: ${config.enableCors}`,
   );
 
   if (config.enableCors) {
@@ -28,15 +28,12 @@ async function bootstrap() {
       hostId: 'local',
       redis: {
         port: 6379,
-        host: '127.0.0.1'
-      }
+        host: '127.0.0.1',
+      },
     };
   });
 
-  const arena = Arena(
-    { queues: queues },
-    { disableListen: true, basePath: '/arena' }
-  );
+  const arena = Arena({ queues }, { disableListen: true, basePath: '/arena' });
   app.use(arena);
 
   await app.listen(config.httpPort);

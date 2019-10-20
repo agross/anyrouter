@@ -4,7 +4,7 @@ import {
   WebSocketServer,
   OnGatewayInit,
   MessageBody,
-  OnGatewayConnection
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { Queue, JobId } from 'bull';
@@ -19,7 +19,7 @@ import flatMap from 'array.prototype.flatmap';
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()
-  server: Server;
+  private readonly server: Server;
   private readonly logger = new Logger(EventsGateway.name);
 
   constructor(
@@ -30,7 +30,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     @InjectQueue('set-default-gateway')
     private readonly setDefaultGateway: Queue,
     @InjectQueue('speed-test') private readonly speedTest: Queue,
-    @InjectQueue('public-ip') private readonly publicIp: Queue
+    @InjectQueue('public-ip') private readonly publicIp: Queue,
   ) {}
 
   private get queues(): Queue<any>[] {
@@ -39,11 +39,11 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
       this.getDefaultGateway,
       this.setDefaultGateway,
       this.speedTest,
-      this.publicIp
+      this.publicIp,
     ];
   }
 
-  afterInit(_server: any) {
+  afterInit() {
     this.queues.forEach(queue => {
       queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
         const job = await queue.getJob(id);
@@ -68,20 +68,20 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     });
   }
 
-  async handleConnection(client: Socket, ..._args: any[]) {
+  async handleConnection(client: Socket) {
     client.emit('gateways', this.config.gateways);
     client.emit('eventHistory', await this.getEventHistory());
   }
 
   @SubscribeMessage('setDefaultGateway')
   async setNewDefaultGateway(
-    @MessageBody() message: SetDefaultGateway
+    @MessageBody() message: SetDefaultGateway,
   ): Promise<JobId> {
     this.logger.log(`Setting ${message.gateway} as default gateway`);
 
     const job = await this.setDefaultGateway.add('set-default-gateway', {
       description: 'Set default gateway',
-      gateway: message.gateway
+      gateway: message.gateway,
     });
 
     return job.id;
@@ -99,18 +99,19 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
           ['completed', 'failed'],
           undefined,
           undefined,
-          true
+          true,
         );
-      })
+      }),
     );
 
     const events = flatMap(jobs, x => x).map(async job => Event.fromJob(job));
 
     this.logger.debug(
-      `Loaded ${events.length} completed and failed events from history`
+      `Loaded ${events.length} completed and failed events from history`,
     );
-    return Promise.all(events).then(events =>
-      events.sort((left, right) => left.timestamp - right.timestamp)
+
+    return Promise.all(events).then(e =>
+      e.sort((left, right) => left.timestamp - right.timestamp),
     );
   }
 }

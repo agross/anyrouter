@@ -20,7 +20,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     @InjectQueue('set-default-gateway')
     private readonly setDefaultGateway: Queue,
     @InjectQueue('speed-test') private readonly speedTest: Queue,
-    @InjectQueue('public-ip') private readonly publicIp: Queue
+    @InjectQueue('public-ip') private readonly publicIp: Queue,
   ) {}
 
   async onModuleInit() {
@@ -28,11 +28,11 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     await this.scheduleRepeatedJobs();
 
     const subscriptions = this.queues.map(q =>
-      this.scheduleCleanup(q, this.KEEP_JOB_HISTORY)
+      this.scheduleCleanup(q, this.KEEP_JOB_HISTORY),
     );
     this.subscription = subscriptions.reduce(
       (acc, el) => acc.add(el),
-      subscriptions[0]
+      subscriptions[0],
     );
   }
 
@@ -46,7 +46,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
       this.getDefaultGateway,
       this.setDefaultGateway,
       this.speedTest,
-      this.publicIp
+      this.publicIp,
     ];
   }
 
@@ -67,23 +67,23 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
         this.getDefaultGateway,
         { description: 'Default Gateway' },
         {
-          repeat: { every: 10000 }
-        }
+          repeat: { every: 10000 },
+        },
       ],
       [
         this.publicIp,
         { description: 'Public IP' },
         {
-          repeat: { every: 60000 }
-        }
+          repeat: { every: 60000 },
+        },
       ],
       [
         this.speedTest,
         { description: 'Speedtest' },
         {
-          repeat: { every: 60000 }
-        }
-      ]
+          repeat: { every: 60000 },
+        },
+      ],
     ]);
 
     const scheduled = jobs.map(job => {
@@ -106,21 +106,21 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
         queue,
         { description: `Ping ${host.description}`, host: host.host },
         {
-          repeat: { every: 5000 + index }
-        } as JobOptions
+          repeat: { every: 5000 + index },
+        } as JobOptions,
       ]);
   }
 
   private async schedule(
     queue: Queue<any>,
     data: any,
-    job: JobOptions
+    job: JobOptions,
   ): Promise<Job<any>> {
     return queue.add(queue.name, data, job).then(added => {
       this.logger.log(
         `Scheduled job ${JSON.stringify(added)} with ID ${added.id} on ${
           queue.name
-        }`
+        }`,
       );
       return added;
     });
@@ -128,7 +128,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
 
   private scheduleCleanup(queue: Queue<any>, keep: TimeSpan): Subscription {
     queue.on('cleaned', (jobs, type) =>
-      this.logger.debug(`${queue.name}: ${jobs.length} ${type} jobs cleaned`)
+      this.logger.debug(`${queue.name}: ${jobs.length} ${type} jobs cleaned`),
     );
 
     const every = TimeSpan.fromMinutes(1);
@@ -136,7 +136,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     this.logger.debug(
       `${
         queue.name
-      }: Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`
+      }: Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`,
     );
 
     return timer(every.totalMilliseconds())
@@ -144,11 +144,11 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
         tap(_ => {
           const types: JobStatusClean[] = ['completed', 'failed'];
           const clean = types.map(status =>
-            queue.clean(keep.totalMilliseconds(), status)
+            queue.clean(keep.totalMilliseconds(), status),
           );
 
           return Promise.all(clean);
-        })
+        }),
       )
       .subscribe();
   }

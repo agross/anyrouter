@@ -5,14 +5,14 @@ import * as ping from 'ping';
 
 export default async function(job: Job) {
   const logger = new Logger(
-    `${path.basename(__filename, path.extname(__filename))} worker`
+    `${path.basename(__filename, path.extname(__filename))} worker`,
   );
   logger.debug(`${job.data.description} job ${job.id}`);
 
   try {
     const result = await ping.promise.probe(job.data.host, {
       timeout: 2,
-      min_reply: 1
+      min_reply: 1,
     });
 
     if (!result.alive) {
@@ -23,7 +23,7 @@ export default async function(job: Job) {
 
     return {
       ip: result.numeric_host,
-      rtt: result.time
+      rtt: result.time,
     };
   } catch (error) {
     logger.error(`${job.data.host} ${JSON.stringify(error, null, 2)}`);

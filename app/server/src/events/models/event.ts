@@ -1,32 +1,6 @@
 import { Job } from 'bull';
-
-export enum EventStatus {
-  Successful = 'successful',
-  Failed = 'failed',
-  Running = 'running'
-}
-
-export class EventError {
-  reason: string;
-  stacktrace: string[];
-
-  constructor(job: Job) {
-    this.stacktrace = job.stacktrace.reduce(
-      (acc, line) => acc.concat(line.split('\n')),
-      []
-    );
-
-    if (this.stacktrace.length) {
-      this.reason = this.stacktrace[0];
-    }
-
-    if (!this.reason) {
-      // Stalled jobs have a failedReason that we cannot access directly.
-      const json = job.toJSON();
-      this.reason = json.failedReason;
-    }
-  }
-}
+import { EventStatus } from './event-status';
+import { EventError } from './event-error';
 
 export class Event {
   id: string;

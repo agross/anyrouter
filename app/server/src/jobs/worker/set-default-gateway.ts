@@ -6,7 +6,7 @@ import { spawn } from 'child_process';
 async function runProcess(
   logger: Logger,
   command: string,
-  args?: readonly string[]
+  args?: readonly string[],
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     logger.debug(`Running ${command} ${args}`);
@@ -26,7 +26,7 @@ async function runProcess(
     });
 
     process.on('exit', code => {
-      if (code == 0) {
+      if (code === 0) {
         logger.log(`Status: ${code}`);
         logger.debug(`Output: ${output}`);
 
@@ -43,7 +43,7 @@ async function runProcess(
 
 export default async function(job: Job) {
   const logger = new Logger(
-    `${path.basename(__filename, path.extname(__filename))} worker`
+    `${path.basename(__filename, path.extname(__filename))} worker`,
   );
   logger.debug(`${job.data.description} job ${job.id}`);
 
@@ -53,6 +53,6 @@ export default async function(job: Job) {
     'add',
     'default',
     'via',
-    job.data.gateway
+    job.data.gateway,
   ]);
 }

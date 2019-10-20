@@ -5,6 +5,6 @@ import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [JobsModule.register(), ConfigModule],
-  providers: [EventsGateway]
+  providers: [EventsGateway],
 })
 export class EventsModule {}

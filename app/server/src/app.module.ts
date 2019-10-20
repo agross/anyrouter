@@ -5,6 +5,6 @@ import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [EventsModule, ConfigModule],
-  controllers: [AppController]
+  controllers: [AppController],
 })
 export class AppModule {}

@@ -2,7 +2,7 @@ import { Module, DynamicModule, Logger } from '@nestjs/common';
 import {
   BullModule,
   BullQueueAdvancedSeparateProcessor,
-  BullModuleOptions
+  BullModuleOptions,
 } from 'nest-bull';
 import * as path from 'path';
 import * as glob from 'glob';
@@ -20,7 +20,7 @@ export class JobsModule {
         return {
           name: path.basename(fn, path.extname(fn)),
           path: fn,
-          concurrency: 1
+          concurrency: 1,
         };
       });
 
@@ -29,13 +29,13 @@ export class JobsModule {
         name: p.name,
         options: {
           settings: {
-            maxStalledCount: 0
+            maxStalledCount: 0,
           },
           redis: {
-            port: 6379
-          }
+            port: 6379,
+          },
         },
-        processors: [p]
+        processors: [p],
       };
     });
   }
@@ -47,7 +47,7 @@ export class JobsModule {
       module: JobsModule,
       imports: [ConfigModule, bull],
       providers: [JobsService],
-      exports: [bull]
+      exports: [bull],
     };
   }
 }
