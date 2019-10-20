@@ -1,7 +1,8 @@
 <template>
   <li :class="[latestEvent.status]">
     <h4>
-      <font-awesome-icon :icon="icon"
+      <font-awesome-icon class="status"
+                         :icon="icon"
                          :spin="running"/>
       {{ latestEvent.data.description }}
     </h4>
@@ -76,7 +77,7 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
 
   private get indicatorStyles() {
     return {
-      stroke: '#000',
+      stroke: '#2c3e50',
     };
   }
 

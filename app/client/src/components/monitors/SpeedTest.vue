@@ -1,7 +1,8 @@
 <template>
   <li :class="[latestEvent.status]">
     <h4>
-      <font-awesome-icon :icon="icon"
+      <font-awesome-icon class="status"
+                         :icon="icon"
                          :spin="running"/>
       {{ latestEvent.data.description }}
     </h4>
@@ -32,8 +33,8 @@
 import { Prop, Vue } from 'vue-property-decorator';
 import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
-import * as moment from 'moment';
 import Monitor from './Monitor.vue';
+import * as moment from 'moment';
 
 @Component({})
 export default class SpeedTest extends Mixins<Monitor>(Monitor) {
@@ -96,7 +97,7 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
 
   private get indicatorStyles() {
     return {
-      stroke: '#000',
+      stroke: '#2c3e50',
     };
   }
 

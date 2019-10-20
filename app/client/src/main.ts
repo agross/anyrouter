@@ -11,6 +11,7 @@ import {
   faCircleNotch,
   faCheck,
   faPlug,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faRoute);
@@ -20,6 +21,7 @@ library.add(faMagic);
 library.add(faCircleNotch);
 library.add(faCheck);
 library.add(faPlug);
+library.add(faInfoCircle);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 import VueSocketIOExt from 'vue-socket.io-extended';
@@ -37,6 +39,9 @@ Vue.use(VueSocketIOExt, createSocket());
 
 import Sparkline from 'vue-sparklines';
 Vue.use(Sparkline);
+
+import VTooltip from 'v-tooltip';
+Vue.use(VTooltip);
 
 Vue.config.productionTip = false;
 

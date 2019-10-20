@@ -87,11 +87,11 @@ ul.monitors {
     list-style: none;
     padding: 1rem;
 
-    &.successful svg {
+    &.successful svg.status {
       color: green;
     }
 
-    &.failed svg {
+    &.failed svg.status {
       color: red;
     }
   }
