@@ -1,10 +1,14 @@
 import { OnModuleInit, Logger } from '@nestjs/common';
-import { Queue, JobOptions } from 'bull';
+import { Queue, JobOptions, JobStatusClean } from 'bull';
 import { InjectQueue } from 'nest-bull';
+import { timer } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import TimeSpan from 'timespan';
 import { ConfigService } from '../config/config.service';
 
 export class JobsService implements OnModuleInit {
   private readonly logger = new Logger(JobsService.name);
+  private readonly KEEP_JOB_HISTORY: TimeSpan = TimeSpan.fromHours(1);
 
   constructor(
     private readonly config: ConfigService,
@@ -42,6 +46,8 @@ export class JobsService implements OnModuleInit {
     this.logger.log(
       `${JSON.stringify(jobs, null, 2)}\n${allJobs.length} jobs ready`
     );
+
+    this.scheduleCleanup(this.queue, this.KEEP_JOB_HISTORY);
   }
 
   private getPingJobs(): [string, any, JobOptions][] {
@@ -69,5 +75,30 @@ export class JobsService implements OnModuleInit {
     });
 
     return Promise.all(scheduled);
+  }
+
+  private scheduleCleanup(queue: Queue<any>, keep: TimeSpan) {
+    queue.on('cleaned', (jobs, type) =>
+      this.logger.debug(`${jobs.length} ${type} jobs cleaned`)
+    );
+
+    const every = TimeSpan.fromMinutes(1);
+
+    this.logger.debug(
+      `Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`
+    );
+
+    timer(every.totalMilliseconds())
+      .pipe(
+        tap(_ => {
+          const types: JobStatusClean[] = ['completed', 'failed'];
+          const clean = types.map(status =>
+            queue.clean(keep.totalMilliseconds(), status)
+          );
+
+          return Promise.all(clean);
+        })
+      )
+      .subscribe();
   }
 }
