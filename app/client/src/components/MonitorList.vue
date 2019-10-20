@@ -1,6 +1,12 @@
 <template>
   <section>
-    <h3><font-awesome-icon icon="check-double" /> Monitors</h3>
+    <h3>
+      <font-awesome-icon icon="check-double" />
+      Monitors
+      <font-awesome-icon icon="circle-notch"
+                         :spin="true"
+                         v-if="loading" />
+    </h3>
     <ul class="monitors">
       <component v-for="(events, key) of sortedEvents"
                  :key="key"
@@ -21,10 +27,18 @@ import sortKeys from 'sort-keys';
 @Component({})
 export default class MonitorList extends Vue {
   private events: { [key: string]: any[] } = {};
+  private loading = false;
+
+  @Socket()
+  private connect() {
+    this.loading = true;
+  }
 
   @Socket('eventHistory')
   private eventHistory(events: any[]) {
     this.addEvents(false, ...events);
+
+    this.loading = false;
   }
 
   @Socket('events')
