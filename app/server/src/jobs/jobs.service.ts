@@ -1,13 +1,15 @@
-import { OnModuleInit, Logger } from '@nestjs/common';
+import { OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Queue, Job, JobOptions, JobStatusClean } from 'bull';
 import { InjectQueue } from 'nest-bull';
-import { timer } from 'rxjs';
+import { timer, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import TimeSpan from 'timespan';
+import flatMap from 'array.prototype.flatmap';
 import { ConfigService } from '../config/config.service';
 
-export class JobsService implements OnModuleInit {
+export class JobsService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JobsService.name);
+  private subscription: Subscription;
   private readonly KEEP_JOB_HISTORY: TimeSpan = TimeSpan.fromHours(1);
 
   constructor(
@@ -22,6 +24,44 @@ export class JobsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    await this.removeWaitingJobsFromPreviousRuns();
+    await this.scheduleRepeatedJobs();
+
+    const subscriptions = this.queues.map(q =>
+      this.scheduleCleanup(q, this.KEEP_JOB_HISTORY)
+    );
+    this.subscription = subscriptions.reduce(
+      (acc, el) => acc.add(el),
+      subscriptions[0]
+    );
+  }
+
+  onModuleDestroy() {
+    this.subscription && this.subscription.unsubscribe();
+  }
+
+  private get queues(): Queue<any>[] {
+    return [
+      this.ping,
+      this.getDefaultGateway,
+      this.setDefaultGateway,
+      this.speedTest,
+      this.publicIp
+    ];
+  }
+
+  private async removeWaitingJobsFromPreviousRuns() {
+    const types: JobStatusClean[] = ['active', 'delayed', 'wait'];
+    const clean = (queue: Queue<any>) => {
+      return types.map(status => queue.clean(0, status));
+    };
+
+    const oldJobs = this.queues.map(queue => clean(queue));
+    this.logger.log(`${oldJobs.length} old jobs deleted`);
+    await Promise.all(flatMap(oldJobs, x => x));
+  }
+
+  private async scheduleRepeatedJobs() {
     const jobs = this.getPingJobs(this.ping).concat([
       [
         this.getDefaultGateway,
@@ -53,18 +93,6 @@ export class JobsService implements OnModuleInit {
     });
 
     await Promise.all(scheduled);
-
-    this.queues.map(q => this.scheduleCleanup(q, this.KEEP_JOB_HISTORY));
-  }
-
-  private get queues(): Queue<any>[] {
-    return [
-      this.ping,
-      this.getDefaultGateway,
-      this.setDefaultGateway,
-      this.speedTest,
-      this.publicIp
-    ];
   }
 
   private getPingJobs(queue: Queue<any>): [Queue<any>, any, JobOptions][] {
@@ -98,7 +126,7 @@ export class JobsService implements OnModuleInit {
     });
   }
 
-  private scheduleCleanup(queue: Queue<any>, keep: TimeSpan) {
+  private scheduleCleanup(queue: Queue<any>, keep: TimeSpan): Subscription {
     queue.on('cleaned', (jobs, type) =>
       this.logger.debug(`${queue.name}: ${jobs.length} ${type} jobs cleaned`)
     );
@@ -111,7 +139,7 @@ export class JobsService implements OnModuleInit {
       }: Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`
     );
 
-    timer(every.totalMilliseconds())
+    return timer(every.totalMilliseconds())
       .pipe(
         tap(_ => {
           const types: JobStatusClean[] = ['completed', 'failed'];
