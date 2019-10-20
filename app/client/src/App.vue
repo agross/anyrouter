@@ -32,7 +32,7 @@ body {
   margin-top: 60px;
   margin-left: auto;
   margin-right: auto;
-  width: 400px;
+  width: 80%;
 }
 
 h1 {
