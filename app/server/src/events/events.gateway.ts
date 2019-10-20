@@ -75,11 +75,16 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   private async getEventHistory(): Promise<Event[]> {
-    const jobs = (await this.queue.getJobs(['completed', 'failed' ], undefined, undefined, true))
-      .map(async job => await Event.fromJob(job));
+    const jobs = (await this.queue.getJobs(
+      ['completed', 'failed'],
+      undefined,
+      undefined,
+      true
+    )).map(async job => await Event.fromJob(job));
 
-
-      this.logger.log(`${jobs.length} completed and failed events from history`);
-      return Promise.all(jobs).then(events => events.sort((left, right) => left.timestamp - right.timestamp));
+    this.logger.log(`${jobs.length} completed and failed events from history`);
+    return Promise.all(jobs).then(events =>
+      events.sort((left, right) => left.timestamp - right.timestamp)
+    );
   }
 }

@@ -21,7 +21,7 @@ export class EventError {
     }
 
     if (!this.reason) {
-      // Stalled jobs have a failedReason why we cannot access directly.
+      // Stalled jobs have a failedReason that we cannot access directly.
       const json = job.toJSON();
       this.reason = json.failedReason;
     }
@@ -38,7 +38,7 @@ export class Event {
   error?: EventError;
 
   public static async fromJob(job: Job): Promise<Event> {
-    const event =  new Event();
+    const event = new Event();
     event.id = job.id.toString();
     event.type = job.name;
     event.data = job.data;
@@ -66,5 +66,4 @@ export class Event {
 
     return event;
   }
-
 }
