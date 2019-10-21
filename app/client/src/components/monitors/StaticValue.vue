@@ -2,12 +2,12 @@
 {
   "en": {
     "get-default-gateway": "Default gateway",
-    "set-default-gateway": "Set default gateway",
+    "set-default-gateway": "Set {gateway} as default gateway ",
     "public-ip": "Public IP"
   },
   "de": {
     "get-default-gateway": "Standardgateway",
-    "set-default-gateway": "Standardgateway setzen",
+    "set-default-gateway": "Standardgateway {gateway} setzen",
     "public-ip": "Öffentliche IP-Adresse"
   }
 }
@@ -19,7 +19,7 @@
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ $t(latestEvent.type) }}
+      {{ $t(latestEvent.type, { gateway: latestEvent.data.gateway }) }}
     </h4>
     <div>
       <span v-if="latestDataEvent && latestDataEvent.error">
