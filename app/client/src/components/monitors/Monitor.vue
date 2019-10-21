@@ -54,7 +54,7 @@ export default class Monitor extends Vue {
 
   private shouldListenTo(event: any): boolean {
     return this.latestEvent.type === event.type &&
-           this.latestEvent.data.description === event.data.description;
+           JSON.stringify(this.latestEvent.data) === JSON.stringify(event.data);
   }
 
   private addEvent(event: any) {

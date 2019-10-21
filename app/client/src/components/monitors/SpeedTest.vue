@@ -1,10 +1,18 @@
+<i18n>
+{
+  "en": {
+    "speed-test": "Speedtest"
+  }
+}
+</i18n>
+
 <template>
   <li :class="[latestEvent.status]">
     <h4>
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ latestEvent.data.description }}
+      {{ $t(latestEvent.type) }}
     </h4>
     <div v-if="latestDataEvent">
       <span v-if="latestDataEvent.error">
