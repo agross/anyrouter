@@ -43,8 +43,13 @@ Vue.use(Sparkline);
 import VTooltip from 'v-tooltip';
 Vue.use(VTooltip);
 
+import VueI18n from 'vue-i18n';
+Vue.use(VueI18n);
+const i18n = new VueI18n({ locale: navigator.language.split('-')[0] });
+
 Vue.config.productionTip = false;
 
 new Vue({
+  i18n,
   render: (h) => h(App),
 }).$mount('#app');

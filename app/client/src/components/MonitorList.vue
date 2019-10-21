@@ -1,8 +1,19 @@
+<i18n>
+{
+  "en": {
+    "monitors": "Monitors"
+  },
+  "de": {
+    "monitors": "Überwachung"
+  }
+}
+</i18n>
+
 <template>
   <section>
     <h3>
       <font-awesome-icon icon="check-double" />
-      Monitors
+      {{ $t('monitors') }}
       <font-awesome-icon icon="circle-notch"
                          :spin="true"
                          v-if="loading" />

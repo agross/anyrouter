@@ -1,3 +1,14 @@
+<i18n>
+{
+  "en": {
+    "use": "Use {gateway}"
+  },
+  "de": {
+    "use": "{gateway} benutzen"
+  }
+}
+</i18n>
+
 <template>
   <li>
     <button :disabled="isDefault"
@@ -7,7 +18,7 @@
       <font-awesome-icon icon="circle-notch"
                          :spin="running"
                          v-if="running" />
-      Use {{ gateway.description }}
+      {{ $t('use', { gateway: gateway.description }) }}
     </button>
   </li>
 </template>

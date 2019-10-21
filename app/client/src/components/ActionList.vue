@@ -1,6 +1,17 @@
+<i18n>
+{
+  "en": {
+    "actions": "Actions"
+  },
+  "de": {
+    "actions": "Aktionen"
+  }
+}
+</i18n>
+
 <template>
   <section>
-    <h3><font-awesome-icon icon="magic" /> Actions</h3>
+    <h3><font-awesome-icon icon="magic" /> {{ $t('actions') }}</h3>
     <ul>
       <ActionListItem v-for="gateway of gateways"
                       v-bind:key="gateway.host"
