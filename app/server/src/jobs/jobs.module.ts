@@ -11,8 +11,6 @@ import { JobsService } from './jobs.service';
 
 @Module({})
 export class JobsModule {
-  private static readonly logger = new Logger(JobsModule.name);
-
   public static get queues(): BullModuleOptions[] {
     const processors: BullQueueAdvancedSeparateProcessor[] = glob
       .sync(path.join(__dirname, 'worker', '*.js'))
@@ -47,7 +45,7 @@ export class JobsModule {
       module: JobsModule,
       imports: [ConfigModule, bull],
       providers: [JobsService],
-      exports: [bull],
+      exports: [JobsService],
     };
   }
 }

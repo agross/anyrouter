@@ -18,7 +18,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     @InjectQueue('get-default-gateway')
     private readonly getDefaultGateway: Queue,
     @InjectQueue('set-default-gateway')
-    private readonly setDefaultGateway: Queue,
+    readonly setDefaultGateway: Queue,
     @InjectQueue('speed-test') private readonly speedTest: Queue,
     @InjectQueue('public-ip') private readonly publicIp: Queue,
   ) {}
@@ -37,10 +37,12 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    this.subscription && this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
-  private get queues(): Queue<any>[] {
+  public get queues(): Queue<any>[] {
     return [
       this.ping,
       this.getDefaultGateway,

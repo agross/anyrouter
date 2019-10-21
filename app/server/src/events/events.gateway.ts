@@ -7,13 +7,14 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server } from 'ws';
-import { Queue, JobId } from 'bull';
-import { BullQueueGlobalEvents, InjectQueue } from 'nest-bull';
-import { SetDefaultGateway } from './models/set-default-gateway';
-import { Event } from './models/event';
-import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { Queue, JobId } from 'bull';
+import { BullQueueGlobalEvents } from 'nest-bull';
+import { Logger } from '@nestjs/common';
+import { JobsService } from '../jobs/jobs.service';
 import { ConfigService } from '../config/config.service';
+import { Event } from './models/event';
+import { SetDefaultGateway } from './models/set-default-gateway';
 import flatMap from 'array.prototype.flatmap';
 
 @WebSocketGateway()
@@ -25,27 +26,11 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
 
   constructor(
     private readonly config: ConfigService,
-    @InjectQueue('ping') private readonly ping: Queue,
-    @InjectQueue('get-default-gateway')
-    private readonly getDefaultGateway: Queue,
-    @InjectQueue('set-default-gateway')
-    private readonly setDefaultGateway: Queue,
-    @InjectQueue('speed-test') private readonly speedTest: Queue,
-    @InjectQueue('public-ip') private readonly publicIp: Queue,
+    private readonly jobs: JobsService,
   ) {}
 
-  private get queues(): Queue<any>[] {
-    return [
-      this.ping,
-      this.getDefaultGateway,
-      this.setDefaultGateway,
-      this.speedTest,
-      this.publicIp,
-    ];
-  }
-
   afterInit() {
-    this.queues.forEach(queue => {
+    this.jobs.queues.forEach(queue => {
       queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
         const job = await queue.getJob(id);
         this.onEvent(await Event.fromJob(job));
@@ -80,7 +65,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   ): Promise<JobId> {
     this.logger.log(`Setting ${message.gateway} as default gateway`);
 
-    const job = await this.setDefaultGateway.add('set-default-gateway', {
+    const job = await this.jobs.setDefaultGateway.add('set-default-gateway', {
       description: 'Set default gateway',
       gateway: message.gateway,
     });
@@ -113,7 +98,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
 
     const result = flatMap(
       await Promise.all(
-        this.queues.map(
+        this.jobs.queues.map(
           async queue => await getLatestJobs(queue, this.QUEUE_MAX_HISTORY),
         ),
       ),
