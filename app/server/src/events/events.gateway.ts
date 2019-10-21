@@ -18,6 +18,7 @@ import flatMap from 'array.prototype.flatmap';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
+  private readonly QUEUE_MAX_HISTORY = 100;
   @WebSocketServer()
   private readonly server: Server;
   private readonly logger = new Logger(EventsGateway.name);
@@ -93,25 +94,36 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   private async getEventHistory(): Promise<Event[]> {
-    const jobs = await Promise.all(
-      this.queues.map(queue => {
-        return queue.getJobs(
-          ['completed', 'failed'],
-          undefined,
-          undefined,
-          true,
-        );
-      }),
-    );
+    const getLatestJobs = async (queue: Queue<any>, limit: number) => {
+      const jobs = await queue.getJobs(
+        ['completed', 'failed'],
+        undefined,
+        undefined,
+        true,
+      );
 
-    const events = flatMap(jobs, x => x).map(async job => Event.fromJob(job));
+      const events = await Promise.all(
+        jobs.map(async job => Event.fromJob(job)),
+      );
+
+      return events
+        .sort((left, right) => left.timestamp - right.timestamp)
+        .splice(-limit);
+    };
+
+    const result = flatMap(
+      await Promise.all(
+        this.queues.map(
+          async queue => await getLatestJobs(queue, this.QUEUE_MAX_HISTORY),
+        ),
+      ),
+      x => x,
+    );
 
     this.logger.debug(
-      `Loaded ${events.length} completed and failed events from history`,
+      `Loaded ${result.length} completed and failed events from history`,
     );
 
-    return Promise.all(events).then(e =>
-      e.sort((left, right) => left.timestamp - right.timestamp),
-    );
+    return result;
   }
 }
