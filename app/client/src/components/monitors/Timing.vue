@@ -1,10 +1,21 @@
+<i18n>
+{
+  "en": {
+    "ping": "Ping {host}"
+  },
+  "de": {
+    "ping": "Erreichbarkeit {host}"
+  }
+}
+</i18n>
+
 <template>
   <li :class="[latestEvent.status]">
     <h4>
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ latestEvent.data.description }}
+      {{ $t(latestEvent.type, { host: latestEvent.data.description }) }}
     </h4>
     <sparkline :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"

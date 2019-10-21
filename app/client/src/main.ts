@@ -47,7 +47,7 @@ const locale = navigator.language.split('-')[0];
 
 import VueI18n from 'vue-i18n';
 Vue.use(VueI18n);
-const i18n = new VueI18n({ locale: locale });
+const i18n = new VueI18n({ locale });
 
 import moment from 'moment';
 import 'moment/locale/de';

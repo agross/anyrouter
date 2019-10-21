@@ -1,10 +1,25 @@
+<i18n>
+{
+  "en": {
+    "get-default-gateway": "Default gateway",
+    "set-default-gateway": "Set default gateway",
+    "public-ip": "Public IP"
+  },
+  "de": {
+    "get-default-gateway": "Standardgateway",
+    "set-default-gateway": "Standardgateway setzen",
+    "public-ip": "Öffentliche IP-Adresse"
+  }
+}
+</i18n>
+
 <template>
   <li :class="[latestEvent.status]">
     <h4>
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ latestEvent.data.description }}
+      {{ $t(latestEvent.type) }}
     </h4>
     <div>
       <span v-if="latestDataEvent && latestDataEvent.error">
