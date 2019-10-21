@@ -17,6 +17,18 @@
                          :spin="running"/>
       {{ $t(latestEvent.type, { host: latestEvent.data.description }) }}
     </h4>
+    <div v-if="latestDataEvent"
+         class="info">
+      <span v-if="latestDataEvent.error">
+        {{ latestDataEvent.error.reason }}
+      </span>
+      <span v-if="latestDataEvent.result">
+        🕒 {{ Math.round(latestDataEvent.result.rtt, 0) }} ms
+      </span>
+
+      <font-awesome-icon icon="info-circle"
+                         v-tooltip="latestDataEventTimestamp"/>
+    </div>
     <sparkline v-if="errors.length > 1 || rttData.length > 1"
                :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
@@ -101,7 +113,7 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
 
         let message;
         if (event.status === 'successful') {
-          message = `🕒 ${val.value}ms`;
+          message = `🕒 ${val.value} ms`;
         } else {
           const err = event.error && event.error.reason;
 

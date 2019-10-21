@@ -24,6 +24,11 @@ export default class Monitor extends Vue {
     return this.events.slice(-1)[0];
   }
 
+  private get latestDataEventTimestamp() {
+    return this.latestDataEvent &&
+           this.$moment(this.latestDataEvent.timestamp as number).fromNow();
+  }
+
   protected get running() {
     return this.connected &&
            this.latestEvent.status === 'running';

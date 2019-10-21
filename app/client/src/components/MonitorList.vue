@@ -107,7 +107,8 @@ ul.monitors {
     }
   }
 
-  h4 {
+  h4,
+  .info {
     margin: 0 0 .5rem 0;
   }
 }

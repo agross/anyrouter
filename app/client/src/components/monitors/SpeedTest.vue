@@ -14,7 +14,8 @@
                          :spin="running"/>
       {{ $t(latestEvent.type) }}
     </h4>
-    <div v-if="latestDataEvent">
+    <div v-if="latestDataEvent"
+         class="info">
       <span v-if="latestDataEvent.error">
         {{ latestDataEvent.error.reason }}
       </span>
@@ -145,10 +146,6 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
           </div>`;
       },
     };
-  }
-
-  private get latestDataEventTimestamp() {
-    return this.$moment(this.latestDataEvent.timestamp as number).fromNow();
   }
 }
 </script>

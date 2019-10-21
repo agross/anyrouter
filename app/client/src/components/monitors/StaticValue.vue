@@ -21,7 +21,8 @@
                          :spin="running"/>
       {{ $t(latestEvent.type, { gateway: latestEvent.data.gateway }) }}
     </h4>
-    <div v-if="latestDataEvent">
+    <div v-if="latestDataEvent"
+         class="info">
       <span v-if="latestDataEvent.error">
         {{ latestDataEvent.error.reason }}
       </span>
@@ -44,10 +45,6 @@ import Monitor from './Monitor.vue';
 export default class StaticValue extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
     return true;
-  }
-
-  private get latestDataEventTimestamp() {
-    return this.$moment(this.latestDataEvent.timestamp as number).fromNow();
   }
 
   private ipOrResult() {
