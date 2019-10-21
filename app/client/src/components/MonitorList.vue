@@ -83,7 +83,7 @@ ul.monitors {
     border-radius: 5px;
     margin-block-end: 1rem;
     margin-inline-end: 1rem;
-    flex: 0 0 200px;
+    flex: 0 0 220px;
     list-style: none;
     padding: 1rem;
 

@@ -8,7 +8,7 @@
     </h4>
     <sparkline :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
-               :width="200">
+               :width="220">
       <sparklineBar :data="errors"
                     :limit="errors.length"
                     :min="0"

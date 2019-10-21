@@ -6,9 +6,21 @@
                          :spin="running"/>
       {{ latestEvent.data.description }}
     </h4>
+    <div v-if="latestDataEvent">
+      <span v-if="latestDataEvent.error">
+        {{ latestDataEvent.error.reason }}
+      </span>
+      <span v-if="latestDataEvent.result">
+        <span class="download">⬇</span> {{ Math.round(latestDataEvent.result.speeds.download, 0) }} Mbit/s
+        <span class="upload">⬆</span> {{ Math.round(latestDataEvent.result.speeds.upload, 0) }} Mbit/s
+      </span>
+
+      <font-awesome-icon icon="info-circle"
+                         v-tooltip="latestEventTimestamp"/>
+    </div>
     <sparkline :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
-               :width="200">
+               :width="220">
       <sparklineBar :data="errors"
                     :limit="errors.length"
                     :min="0"
@@ -41,7 +53,6 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
     return eventType === 'speed-test';
   }
-
   private DOWNLOAD_COLOR = 'green';
   private UPLOAD_COLOR = 'goldenrod';
 
@@ -110,8 +121,8 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
 
         let message;
         if (event.status === 'successful') {
-          message = `<span style="color: ${that.DOWNLOAD_COLOR}">⬇</span> ${event.result.speeds.download} Mbit/s<br>
-            <span style="color: ${that.UPLOAD_COLOR}">⬆</span> ${event.result.speeds.upload} Mbit/s`;
+          message = `<span class="download">⬇</span> ${event.result.speeds.download} Mbit/s<br>
+            <span class="upload">⬆</span> ${event.result.speeds.upload} Mbit/s`;
         } else {
           const err = event.error && event.error.reason;
 
@@ -127,8 +138,19 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
       },
     };
   }
+
+  private get latestEventTimestamp() {
+    return moment.default(this.latestDataEvent.timestamp).fromNow();
+  }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+.download {
+  color: green;
+}
+
+.upload {
+  color: goldenrod;
+}
 </style>
