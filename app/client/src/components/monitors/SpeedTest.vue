@@ -54,7 +54,6 @@ import { Prop, Vue } from 'vue-property-decorator';
 import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
 import Monitor from './Monitor.vue';
-import * as moment from 'moment';
 
 @Component({})
 export default class SpeedTest extends Mixins<Monitor>(Monitor) {

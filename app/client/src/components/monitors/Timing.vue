@@ -40,7 +40,6 @@
 import { Prop, Vue } from 'vue-property-decorator';
 import { Component, Mixin, Mixins } from 'vue-mixin-decorator';
 import { Socket } from 'vue-socket.io-extended';
-import * as moment from 'moment';
 import Monitor from './Monitor.vue';
 
 @Component({})
@@ -108,7 +107,7 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
           message = `❌ ${err}`;
         }
 
-        const ts = moment.default(event.timestamp);
+        const ts = that.$moment(event.timestamp as number);
 
         return `<div>
               ${message}<br>
