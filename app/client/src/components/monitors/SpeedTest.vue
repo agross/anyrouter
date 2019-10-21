@@ -16,7 +16,7 @@
       </span>
 
       <font-awesome-icon icon="info-circle"
-                         v-tooltip="latestEventTimestamp"/>
+                         v-tooltip="latestDataEventTimestamp"/>
     </div>
     <sparkline :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
@@ -129,7 +129,7 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
           message = `❌ ${err}`;
         }
 
-        const ts = moment.default(event.timestamp);
+        const ts = that.$moment(event.timestamp as number);
 
         return `<div>
             ${message}<br>
@@ -139,8 +139,8 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
     };
   }
 
-  private get latestEventTimestamp() {
-    return moment.default(this.latestDataEvent.timestamp).fromNow();
+  private get latestDataEventTimestamp() {
+    return this.$moment(this.latestDataEvent.timestamp as number).fromNow();
   }
 }
 </script>
