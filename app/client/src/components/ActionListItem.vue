@@ -48,6 +48,10 @@ export default class ActionListItem extends Vue {
     if (event.type === 'set-default-gateway') {
       this.running = event.status === 'running' &&
                      event.data.gateway === this.gateway.host;
+
+      if (event.status === 'successful') {
+        this.isDefault = event.result.ip === this.gateway.host;
+      }
     }
 
     if (event.type === 'get-default-gateway' &&
