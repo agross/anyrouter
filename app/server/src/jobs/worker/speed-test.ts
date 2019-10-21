@@ -10,6 +10,6 @@ export default async function(job: Job) {
   logger.debug(`${job.data.description} job ${job.id}`);
 
   const results = await testSpeed({ maxTime: 5000, maxServers: 1 });
-  logger.debug(results);
+  logger.debug(JSON.stringify(results, null, 2));
   return results;
 }
