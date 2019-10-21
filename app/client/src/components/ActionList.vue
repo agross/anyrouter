@@ -41,4 +41,15 @@ export default class ActionList extends Vue {
 </script>
 
 <style scoped lang="scss">
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+
+  li {
+    list-style: none;
+    margin-block-end: 1rem;
+    margin-inline-end: 1rem;
+  }
+}
 </style>
