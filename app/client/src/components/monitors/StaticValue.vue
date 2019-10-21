@@ -11,7 +11,7 @@
         {{ latestDataEvent.error.reason }}
       </span>
       <span v-if="latestDataEvent && latestDataEvent.result">
-        {{ latestDataEvent.result.ip }}
+        {{ ipOrResult() }}
       </span>
       <font-awesome-icon icon="info-circle"
                          v-tooltip="latestEventTimestamp"/>
@@ -34,6 +34,15 @@ export default class StaticValue extends Mixins<Monitor>(Monitor) {
 
   private get latestEventTimestamp() {
     return moment.default(this.latestDataEvent.timestamp).fromNow();
+  }
+
+  private ipOrResult() {
+    const ip = this.latestDataEvent.result.ip;
+    if (ip) {
+      return ip;
+    }
+
+    return this.latestDataEvent.result;
   }
 }
 </script>

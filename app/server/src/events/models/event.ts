@@ -34,7 +34,7 @@ export class Event {
       event.result = job.returnvalue;
 
       if (!event.result) {
-        console.error(`${event.id} success without result`);
+        console.warn(`${event.type} ${event.id} success without result`);
       }
     }
 

@@ -2,6 +2,7 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import NestedError from 'nested-error-stacks';
 
 async function runProcess(
   logger: Logger,
@@ -12,11 +13,6 @@ async function runProcess(
     logger.debug(`Running ${command} ${args}`);
     const process = spawn(command, args);
 
-    process.on('error', error => {
-      logger.error(error.message, error.stack);
-      reject(error.stack);
-    });
-
     let output = '';
     process.stdout.on('data', chunk => {
       output += chunk.toString();
@@ -25,17 +21,20 @@ async function runProcess(
       output += chunk.toString();
     });
 
+    process.on('error', error => {
+      reject(
+        new NestedError(
+          `${command} ${args.join(' ')}: ${error.message}`,
+          error,
+        ),
+      );
+    });
+
     process.on('exit', code => {
       if (code === 0) {
-        logger.log(`Status: ${code}`);
-        logger.debug(`Output: ${output}`);
-
         resolve(output);
       } else {
-        logger.error(`Status: ${code}`);
-        logger.error(`Output: ${output}`);
-
-        reject(`[${code}] ${output}`);
+        reject(new Error(`Exit code: ${code}\nOutput: ${output}`));
       }
     });
   });
@@ -48,11 +47,15 @@ export default async function(job: Job) {
   logger.debug(`${job.data.description} job ${job.id}`);
 
   await runProcess(logger, 'ip', ['route', 'del', 'default']);
-  await runProcess(logger, 'ip', [
+  return runProcess(logger, 'ip', [
     'route',
     'add',
     'default',
     'via',
     job.data.gateway,
-  ]);
+  ]).then(_ => {
+    return {
+      ip: job.data.gateway,
+    };
+  });
 }
