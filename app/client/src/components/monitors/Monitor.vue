@@ -12,7 +12,7 @@ export default class Monitor extends Vue {
 
   protected get dataEvents() {
     return this.events
-    .filter(e => e.status !== 'running')
+    .filter(e => e.status === 'successful' || e.status === 'failed')
     .slice(-1 * this.MAX_EVENTS);
   }
 

@@ -80,7 +80,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   private async getEventHistory(): Promise<Event[]> {
     const getLatestJobs = async (queue: Queue<any>, limit: number) => {
       const jobs = await queue.getJobs(
-        ['completed', 'failed'],
+        ['completed', 'failed', 'delayed'],
         undefined,
         undefined,
         true,
