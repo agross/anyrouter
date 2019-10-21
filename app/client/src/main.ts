@@ -51,6 +51,7 @@ const i18n = new VueI18n({
   locale,
   fallbackLocale: 'en',
   formatFallbackMessages: true,
+  silentFallbackWarn: true,
 });
 
 import moment from 'moment';
