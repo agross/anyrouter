@@ -26,7 +26,8 @@
       <font-awesome-icon icon="info-circle"
                          v-tooltip="latestDataEventTimestamp"/>
     </div>
-    <sparkline :indicatorStyles="indicatorStyles"
+    <sparkline v-if="errors.length > 1 || downloadSpeedData.length > 1 || uploadSpeedData.length > 1"
+               :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
                :width="220">
       <sparklineBar :data="errors"

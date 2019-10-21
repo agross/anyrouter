@@ -17,7 +17,8 @@
                          :spin="running"/>
       {{ $t(latestEvent.type, { host: latestEvent.data.description }) }}
     </h4>
-    <sparkline :indicatorStyles="indicatorStyles"
+    <sparkline v-if="errors.length > 1 || rttData.length > 1"
+               :indicatorStyles="indicatorStyles"
                :tooltipProps="tooltipProps"
                :width="220">
       <sparklineBar :data="errors"

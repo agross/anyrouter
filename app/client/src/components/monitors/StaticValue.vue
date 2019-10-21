@@ -21,15 +21,15 @@
                          :spin="running"/>
       {{ $t(latestEvent.type, { gateway: latestEvent.data.gateway }) }}
     </h4>
-    <div>
-      <span v-if="latestDataEvent && latestDataEvent.error">
+    <div v-if="latestDataEvent">
+      <span v-if="latestDataEvent.error">
         {{ latestDataEvent.error.reason }}
       </span>
-      <span v-if="latestDataEvent && latestDataEvent.result">
+      <span v-if="latestDataEvent.result">
         {{ ipOrResult() }}
       </span>
       <font-awesome-icon icon="info-circle"
-                         v-tooltip="latestEventTimestamp"/>
+                         v-tooltip="latestDataEventTimestamp"/>
     </div>
   </li>
 </template>
@@ -46,7 +46,7 @@ export default class StaticValue extends Mixins<Monitor>(Monitor) {
     return true;
   }
 
-  private get latestEventTimestamp() {
+  private get latestDataEventTimestamp() {
     return this.$moment(this.latestDataEvent.timestamp as number).fromNow();
   }
 
