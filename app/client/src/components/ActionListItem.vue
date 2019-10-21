@@ -86,6 +86,10 @@ button {
     border: $color;
     cursor: not-allowed;
     opacity: .6;
+
+    &:focus {
+      box-shadow: none;
+    }
   }
 }
 </style>
