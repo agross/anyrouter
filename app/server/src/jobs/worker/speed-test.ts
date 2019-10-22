@@ -7,7 +7,7 @@ export default async function(job: Job) {
   const logger = new Logger(
     `${path.basename(__filename, path.extname(__filename))} worker`,
   );
-  logger.debug(`${job.data.description} job ${job.id}`);
+  logger.debug(`Job ${job.id}`);
 
   const results = await testSpeed({ maxTime: 5000, maxServers: 1 });
   logger.debug(JSON.stringify(results, null, 2));

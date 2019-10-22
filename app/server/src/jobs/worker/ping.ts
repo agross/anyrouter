@@ -7,7 +7,7 @@ export default async function(job: Job) {
   const logger = new Logger(
     `${path.basename(__filename, path.extname(__filename))} worker`,
   );
-  logger.debug(`${job.data.description} job ${job.id}`);
+  logger.debug(`${job.data.host} job ${job.id}`);
 
   try {
     const result = await ping.promise.probe(job.data.host, {

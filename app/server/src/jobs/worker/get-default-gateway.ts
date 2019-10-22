@@ -7,7 +7,7 @@ export default function(job: Job) {
   const logger = new Logger(
     `${path.basename(__filename, path.extname(__filename))} worker`,
   );
-  logger.debug(`${job.data.description} job ${job.id}`);
+  logger.debug(`Job ${job.id}`);
 
   return new Promise((resolve, reject) => {
     network.get_gateway_ip((error: Error, ip: string) => {

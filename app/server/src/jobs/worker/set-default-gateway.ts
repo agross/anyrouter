@@ -44,7 +44,7 @@ export default async function(job: Job) {
   const logger = new Logger(
     `${path.basename(__filename, path.extname(__filename))} worker`,
   );
-  logger.debug(`${job.data.description} job ${job.id}`);
+  logger.debug(`${job.data.gateway} job ${job.id}`);
 
   await runProcess(logger, 'ip', ['route', 'del', 'default']);
   return runProcess(logger, 'ip', [
