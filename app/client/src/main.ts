@@ -40,6 +40,34 @@ Vue.use(VueSocketIOExt, createSocket());
 import Sparkline from 'vue-sparklines';
 Vue.use(Sparkline);
 
+import SparklineWithoutScrollOffset from 'vue-sparklines/components/charts/Sparkline';
+const after = (fn, runAfter: (Sparkline) => void) => {
+  return function() {
+    const res = fn.apply(this, arguments);
+    runAfter(this);
+    return res;
+  };
+};
+
+const addScrollPosition = (sparkline: any) => {
+  const add = (numPx: string, offset: number) => {
+    const numbers = numPx.match(/\d+/);
+    if (!numbers || !numbers.length) {
+      return numPx;
+    }
+    const num = numbers.map(Number)[0];
+    return `${num + offset}px`;
+  };
+
+  const style = sparkline.$refs.sparklineTooltip.style;
+  style.left = add(style.left, window.scrollX);
+  style.top = add(style.top, window.scrollY);
+};
+
+SparklineWithoutScrollOffset.methods.updateData =
+  after(SparklineWithoutScrollOffset.methods.updateData,
+        addScrollPosition);
+
 import VTooltip from 'v-tooltip';
 Vue.use(VTooltip);
 
