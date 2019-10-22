@@ -1,7 +1,10 @@
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
+import * as util from 'util';
 import * as path from 'path';
 import * as network from 'network';
+
+const get_public_ip = util.promisify(network.get_public_ip);
 
 export default function(job: Job) {
   const logger = new Logger(
@@ -9,17 +12,15 @@ export default function(job: Job) {
   );
   logger.debug(`Job ${job.id}`);
 
-  return new Promise((resolve, reject) => {
-    network.get_public_ip((error: Error, ip: string) => {
-      if (error) {
-        logger.error(error.message);
-        reject(error);
-      } else {
-        const result = { ip };
+  return get_public_ip()
+    .then((ip: string) => {
+      const result = { ip };
 
-        logger.debug(`${JSON.stringify(result, null, 2)}`);
-        resolve(result);
-      }
+      logger.debug(`${JSON.stringify(result, null, 2)}`);
+      return result;
+    })
+    .catch((error: Error) => {
+      logger.error(error.message);
+      throw error;
     });
-  });
 }
