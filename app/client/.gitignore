@@ -2,8 +2,6 @@
 node_modules
 /dist
 
-favicon.json.data
-
 # local env files
 .env.local
 .env.*.local

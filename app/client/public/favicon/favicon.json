@@ -1,8 +1,9 @@
 {
-  "masterPicture": "favicon.svg",
+  "masterPicture": "public/favicon/black.svg",
   "iconsPath": "/",
   "design": {
     "ios": {
+      "masterPicture": "public/favicon/white.svg",
       "pictureAspect": "backgroundAndMargin",
       "backgroundColor": "#008000",
       "margin": "14%",
@@ -16,6 +17,7 @@
     },
     "desktopBrowser": {},
     "windows": {
+      "masterPicture": "public/favicon/white.svg",
       "pictureAspect": "noChange",
       "backgroundColor": "#00a300",
       "onConflict": "override",
@@ -31,10 +33,11 @@
       "appName": "anyrouter"
     },
     "androidChrome": {
+      "masterPicture": "public/favicon/white.svg",
       "pictureAspect": "backgroundAndMargin",
       "margin": "17%",
       "backgroundColor": "#008000",
-      "themeColor": "#ffffff",
+      "themeColor": "#008000",
       "manifest": {
         "name": "anyrouter",
         "display": "browser",

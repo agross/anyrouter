@@ -5,6 +5,12 @@ module.exports = {
       .resourceQuery(/blockType=i18n/)
       .type('javascript/auto')
       .use('i18n')
-      .loader('@kazupon/vue-i18n-loader')
+      .loader('@kazupon/vue-i18n-loader');
+
+    config.plugin('copy')
+      .tap(([options]) => {
+        options[0].ignore.push('favicon/**/*');
+        return [options];
+      });
   }
 }
