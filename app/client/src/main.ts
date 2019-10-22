@@ -69,7 +69,7 @@ SparklineWithoutScrollOffset.methods.updateData =
         addScrollPosition);
 
 import VTooltip from 'v-tooltip';
-Vue.use(VTooltip);
+Vue.use(VTooltip, { defaultTrigger: 'hover focus click'});
 
 const locale = navigator.language.split('-')[0];
 

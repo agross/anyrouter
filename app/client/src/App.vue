@@ -48,6 +48,10 @@ h1 {
   }
 }
 
+.has-tooltip {
+  outline: none;
+}
+
 .tooltip {
   display: block !important;
   z-index: 10000;
