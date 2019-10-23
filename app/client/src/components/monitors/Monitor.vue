@@ -64,6 +64,10 @@ export default class Monitor extends Vue {
 
   private addEvent(event: any) {
     this.events.push(event);
+
+    if (this.events.length > this.MAX_EVENTS) {
+      this.events.shift();
+    }
   }
 }
 </script>
