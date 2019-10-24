@@ -86,7 +86,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         true,
       );
 
-      const events = await Promise.all(
+      const events: Event[] = await Promise.all(
         jobs.map(async job => Event.fromJob(job)),
       );
 
