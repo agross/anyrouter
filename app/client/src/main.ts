@@ -7,10 +7,8 @@ Vue.use(FontAwesome);
 import SocketIO from './init/socket.io';
 Vue.use(SocketIO);
 
-import Sparkline from 'vue-sparklines';
-import SparklineTooltipPatch from './sparkline-tooltip-patch';
+import Sparkline from './init/sparkline';
 Vue.use(Sparkline);
-SparklineTooltipPatch.apply();
 
 import VTooltip from 'v-tooltip';
 Vue.use(VTooltip, { defaultTrigger: 'hover focus click'});
