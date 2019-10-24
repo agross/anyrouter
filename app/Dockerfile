@@ -1,4 +1,4 @@
-FROM node:alpine AS server
+FROM node:12-alpine AS server
 
 WORKDIR /server
 
@@ -16,7 +16,7 @@ RUN yarn install \
 COPY server/ .
 RUN yarn run build
 
-FROM node:alpine AS client
+FROM node:12-alpine AS client
 
 WORKDIR /client
 
@@ -28,7 +28,7 @@ COPY client/ .
 RUN yarn run build && \
     yarn run favicon
 
-FROM node:alpine
+FROM node:12-alpine
 LABEL name='anyrouter'
 LABEL version='1.0.0'
 LABEL maintainer='Alexander Groß <agross@therightstuff.de>'
