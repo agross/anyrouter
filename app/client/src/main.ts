@@ -4,18 +4,8 @@ import App from './App.vue';
 import FontAwesome from './init/fontawesome';
 Vue.use(FontAwesome);
 
-import VueSocketIOExt from 'vue-socket.io-extended';
-import io from 'socket.io-client';
-
-function createSocket() {
-  if (process.env.NODE_ENV === 'production') {
-    return io();
-  }
-
-  return io('http://localhost:3000');
-}
-
-Vue.use(VueSocketIOExt, createSocket());
+import SocketIO from './init/socket.io';
+Vue.use(SocketIO);
 
 import Sparkline from 'vue-sparklines';
 import SparklineTooltipPatch from './sparkline-tooltip-patch';
