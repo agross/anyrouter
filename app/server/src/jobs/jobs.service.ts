@@ -1,7 +1,7 @@
 import { OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Queue, Job, JobOptions, JobStatusClean } from 'bull';
-import { InjectQueue } from 'nest-bull';
-import { timer, Subscription } from 'rxjs';
+import { InjectQueue, BullQueueEvents } from 'nest-bull';
+import { Subscription, interval } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import TimeSpan from 'timespan';
 import flatMap from 'array.prototype.flatmap';
@@ -27,12 +27,13 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     await this.removeWaitingJobsFromPreviousRuns();
     await this.scheduleRepeatedJobs();
 
-    const subscriptions = this.queues.map(q =>
-      this.scheduleCleanup(q, this.KEEP_JOB_HISTORY),
+    const subscriptions = this.queues.map(queue =>
+      this.scheduleCleanup(queue, this.KEEP_JOB_HISTORY),
     );
+
     this.subscription = subscriptions.reduce(
       (acc, el) => acc.add(el),
-      subscriptions[0],
+      new Subscription(),
     );
   }
 
@@ -129,7 +130,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
   }
 
   private scheduleCleanup(queue: Queue<any>, keep: TimeSpan): Subscription {
-    queue.on('cleaned', (jobs, type) =>
+    queue.on(BullQueueEvents.CLEANED, (jobs, type) =>
       this.logger.debug(`${queue.name}: ${jobs.length} ${type} jobs cleaned`),
     );
 
@@ -141,8 +142,9 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
       }: Scheduling cleanup every ${every.totalMinutes()}min for jobs older than ${keep.totalMinutes()}min`,
     );
 
-    return timer(every.totalMilliseconds())
+    return interval(every.totalMilliseconds())
       .pipe(
+        tap(_ => this.logger.debug(`${queue.name}: Cleaning...`)),
         tap(_ => {
           const types: JobStatusClean[] = ['completed', 'failed'];
           const clean = types.map(status =>
