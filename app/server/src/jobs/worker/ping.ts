@@ -1,12 +1,10 @@
 import { Job } from 'bull';
-import { Logger } from '@nestjs/common';
-import * as path from 'path';
+import { LoggerFactory } from '../logger-factory';
 import * as ping from 'ping';
 
+const logger = LoggerFactory.createLogger(__filename);
+
 export default async function(job: Job) {
-  const logger = new Logger(
-    `${path.basename(__filename, path.extname(__filename))} worker`,
-  );
   logger.debug(`${job.data.host} job ${job.id}`);
 
   try {

@@ -1,15 +1,13 @@
 import { Job } from 'bull';
-import { Logger } from '@nestjs/common';
+import { LoggerFactory } from '../logger-factory';
 import * as util from 'util';
-import * as path from 'path';
 import * as network from 'network';
+
+const logger = LoggerFactory.createLogger(__filename);
 
 const get_gateway_ip = util.promisify(network.get_gateway_ip);
 
 export default function(job: Job) {
-  const logger = new Logger(
-    `${path.basename(__filename, path.extname(__filename))} worker`,
-  );
   logger.debug(`Job ${job.id}`);
 
   return get_gateway_ip()

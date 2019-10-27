@@ -11,9 +11,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useStaticAssets(path.join(__dirname, '..', 'client'));
 
-  const config = app.get(ConfigService);
-
   const logger = new Logger(__filename);
+
+  const config = app.get(ConfigService);
+  logger.log(`Config: ${JSON.stringify(config.envConfig, null, 2)}`);
+
+  Logger.overrideLogger(config.logLevel);
+
   logger.log(
     `Listening on port ${config.httpPort}, CORS: ${config.enableCors}`,
   );
