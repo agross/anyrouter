@@ -28,10 +28,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $text-color;
-  margin-top: 60px;
+
   margin-left: auto;
   margin-right: auto;
   width: 80%;
+}
+
+@media screen and (min-width: 768px) {
+  body {
+    margin-top: 60px;
+  }
 }
 
 h1 {
@@ -39,6 +45,12 @@ h1 {
 
   &.connected {
     color: green;
+  }
+}
+
+@for $i from 1 through 6 {
+  h#{$i} {
+    white-space: nowrap;
   }
 }
 
