@@ -12,7 +12,7 @@
 <template>
   <li>
     <button :disabled="isDefault"
-            v-on:click.prevent="setGateway">
+            v-on:click.prevent="setDefaultGateway">
       <font-awesome-icon icon="check"
                          v-if="isDefault" />
       <font-awesome-icon icon="circle-notch"
@@ -28,12 +28,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Socket } from 'vue-socket.io-extended';
 
 @Component
-export default class ActionListItem extends Vue {
+export default class SetDefaultGateway extends Vue {
   @Prop({ required: true }) private gateway!: any;
   private isDefault = false;
   private running = false;
 
-  private setGateway() {
+  private setDefaultGateway() {
     this.$socket.client.emit('setDefaultGateway', {
       gateway: this.gateway.host,
     });

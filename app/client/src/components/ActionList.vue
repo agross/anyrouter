@@ -13,21 +13,21 @@
   <section>
     <h3><font-awesome-icon icon="magic" /> {{ $t('actions') }}</h3>
     <ul>
-      <ActionListItem v-for="gateway of gateways"
-                      v-bind:key="gateway.host"
-                      :gateway="gateway"></ActionListItem>
+      <SetDefaultGateway v-for="gateway of gateways"
+                         v-bind:key="gateway.host"
+                         :gateway="gateway"></SetDefaultGateway>
     </ul>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import ActionListItem from './ActionListItem.vue';
+import SetDefaultGateway from './actions/SetDefaultGateway.vue';
 import { Socket } from 'vue-socket.io-extended';
 
 @Component({
   components: {
-    ActionListItem,
+    SetDefaultGateway,
   },
 })
 export default class ActionList extends Vue {
