@@ -7,7 +7,7 @@ const logger = LoggerFactory.createLogger(__filename);
 export default async function(job: Job) {
   logger.debug(`Job ${job.id}`);
 
-  const results = await testSpeed({ maxTime: 5000, maxServers: 1 });
+  const results = await testSpeed();
   logger.debug(JSON.stringify(results, null, 2));
   return results;
 }

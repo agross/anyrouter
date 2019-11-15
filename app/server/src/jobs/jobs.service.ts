@@ -19,7 +19,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     private readonly getDefaultGateway: Queue,
     @InjectQueue('set-default-gateway')
     readonly setDefaultGateway: Queue,
-    @InjectQueue('speed-test') private readonly speedTest: Queue,
+    @InjectQueue('speed-test') readonly speedTest: Queue,
     @InjectQueue('public-ip') private readonly publicIp: Queue,
   ) {}
 
@@ -75,13 +75,6 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
       ],
       [
         this.publicIp,
-        {},
-        {
-          repeat: { every: 60000 },
-        },
-      ],
-      [
-        this.speedTest,
         {},
         {
           repeat: { every: 60000 },

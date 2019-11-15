@@ -13,6 +13,11 @@
                          :icon="icon"
                          :spin="running"/>
       {{ $t(latestEvent.type) }}
+      <font-awesome-icon class="refresh"
+                         icon="sync-alt"
+                         :spin="running"
+                         :class="{ disabled: running }"
+                         v-on:click.prevent="speedTest"/>
     </h4>
     <div v-if="latestDataEvent"
          class="info">
@@ -64,6 +69,10 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
   }
   private DOWNLOAD_COLOR = 'green';
   private UPLOAD_COLOR = 'goldenrod';
+
+  private speedTest() {
+    this.$socket.client.emit('speedTest');
+  }
 
   private get downloadSpeedData(): number[] {
     return this.dataEvents
@@ -157,5 +166,14 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
 
 .upload {
   color: goldenrod;
+}
+
+.refresh {
+  float: right;
+  cursor: pointer;
+
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 </style>

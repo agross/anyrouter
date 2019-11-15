@@ -72,6 +72,15 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     return job.id;
   }
 
+  @SubscribeMessage('speedTest')
+  async speedTest(): Promise<JobId> {
+    this.logger.log(`Running Speedtest`);
+
+    const job = await this.jobs.speedTest.add('speed-test', {});
+
+    return job.id;
+  }
+
   @SubscribeMessage('events')
   onEvent(data: Event) {
     this.server.emit('events', data);

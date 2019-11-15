@@ -35,10 +35,21 @@ import StaticValue from './monitors/StaticValue.vue';
 import SpeedTest from './monitors/SpeedTest.vue';
 import sortKeys from 'sort-keys';
 
-@Component({})
+@Component({
+  components: {
+    Timing,
+    StaticValue,
+    SpeedTest,
+  },
+})
 export default class MonitorList extends Vue {
   private events: { [key: string]: any[] } = {};
   private loading = false;
+
+  private beforeMount() {
+    // Fake event to have the monitor available.
+    this.addEvents(false, { type: 'speed-test', data: {}});
+  }
 
   @Socket()
   private connect() {

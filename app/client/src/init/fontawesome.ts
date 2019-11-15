@@ -10,6 +10,7 @@ import {
   faCheck,
   faPlug,
   faInfoCircle,
+  faSyncAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -21,6 +22,7 @@ library.add(faCircleNotch);
 library.add(faCheck);
 library.add(faPlug);
 library.add(faInfoCircle);
+library.add(faSyncAlt);
 
 export default {
   install(vue: Vue.VueConstructor) {
