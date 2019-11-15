@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+server=@localhost
+domain=.schmiede.local
+status=0
+
+hosts=(
+  dsl-router
+  lte-router
+  anyrouter
+
+  nas
+  tedeg-nas
+  werkstatt.ap
+  büro.ap
+  wohnung.ap
+)
+
+for host in "${hosts[@]}"; do
+  qualified="$host$domain"
+
+  printf 'Looking up %s\n' "$qualified"
+  if ! output="$(dig +short "$qualified" "$server")"; then
+    status=1
+  fi
+
+  [[ -z "$output" ]] && status=2
+
+  printf '%s\n' "$output"
+done
+
+exit "$status"
