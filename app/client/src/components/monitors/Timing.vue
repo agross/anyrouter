@@ -64,7 +64,9 @@ export default class Timing extends Mixins<Monitor>(Monitor) {
   private get rttData(): number[] {
     return this.dataEvents
       .map(e => {
-        if (e.status === 'successful') {
+        if (e.status === 'successful' &&
+            e.result &&
+            e.result.rtt) {
           return e.result.rtt;
         }
         return 0;
