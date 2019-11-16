@@ -11,7 +11,7 @@
 
 <template>
   <li>
-    <button :disabled="isDefault"
+    <button :disabled="isDefault || !connected"
             v-on:click.prevent="setDefaultGateway">
       <font-awesome-icon icon="check"
                          v-if="isDefault" />
@@ -30,6 +30,7 @@ import { Socket } from 'vue-socket.io-extended';
 @Component
 export default class SetDefaultGateway extends Vue {
   @Prop({ required: true }) private gateway!: any;
+  private connected = true;
   private isDefault = false;
   private running = false;
 
@@ -37,6 +38,16 @@ export default class SetDefaultGateway extends Vue {
     this.$socket.client.emit('setDefaultGateway', {
       gateway: this.gateway.host,
     });
+  }
+
+  @Socket()
+  private connect() {
+    this.connected = true;
+  }
+
+  @Socket()
+  private disconnect() {
+    this.connected = false;
   }
 
   @Socket('events')
