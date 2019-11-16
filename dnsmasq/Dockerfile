@@ -9,7 +9,7 @@ HEALTHCHECK --start-period=5s \
             --timeout=2s \
             CMD /docker-healthcheck || exit 1
 
-ADD docker-healthcheck /
+COPY docker-healthcheck /
 
 RUN chmod +x /docker-healthcheck && \
     \
