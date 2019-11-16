@@ -14,6 +14,8 @@ export default class Monitor extends Vue {
 
 
   private created() {
+    this.updateLatestDataEventTimestamp();
+
     this.latestDataEventTimestampTimer = setInterval(this.updateLatestDataEventTimestamp,
                                                      60000);
   }
@@ -82,6 +84,8 @@ export default class Monitor extends Vue {
     if (this.events.length > this.MAX_EVENTS) {
       this.events.shift();
     }
+
+    this.updateLatestDataEventTimestamp();
   }
 }
 </script>
