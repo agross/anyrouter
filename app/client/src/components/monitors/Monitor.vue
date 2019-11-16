@@ -7,8 +7,20 @@ import { Socket } from 'vue-socket.io-extended';
 export default class Monitor extends Vue {
   private connected = true;
   private MAX_EVENTS = 40;
+  private latestDataEventTimestampTimer: any;
+  private latestDataEventTimestamp: string = '';
 
   @Prop({ required: true }) private events!: any[];
+
+
+  private created() {
+    this.latestDataEventTimestampTimer = setInterval(this.updateLatestDataEventTimestamp,
+                                                     60000);
+  }
+
+  private destroyed() {
+    clearInterval(this.latestDataEventTimestampTimer);
+  }
 
   protected get dataEvents() {
     return this.events
@@ -24,9 +36,11 @@ export default class Monitor extends Vue {
     return this.events.slice(-1)[0];
   }
 
-  private get latestDataEventTimestamp() {
-    return this.latestDataEvent &&
-           this.$moment(this.latestDataEvent.timestamp as number).fromNow();
+  private updateLatestDataEventTimestamp() {
+    if (this.latestDataEvent) {
+      const timestamp = this.latestDataEvent.timestamp as number;
+      this.latestDataEventTimestamp = this.$moment(timestamp).fromNow();
+    }
   }
 
   protected get running() {
