@@ -19,7 +19,7 @@
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ $t(latestEvent.type, { gateway: latestEvent.data.gateway }) }}
+      <span>{{ $t(latestEvent.type, { gateway: latestEvent.data.gateway }) }}</span>
     </h4>
     <div v-if="latestDataEvent"
          class="info">

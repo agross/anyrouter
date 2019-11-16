@@ -95,32 +95,50 @@ export default class MonitorList extends Vue {
 </script>
 
 <style lang="scss">
-ul.monitors {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0;
+ul {
+  &.monitors {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
 
-  li {
-    border: 1px solid gray;
-    border-radius: 5px;
-    margin-block-end: 1rem;
-    margin-inline-end: 1rem;
-    flex: 0 0 220px;
-    list-style: none;
-    padding: 1rem;
+    li {
+      $width: 220px;
 
-    &.successful svg.status {
-      color: green;
+      border: 1px solid gray;
+      border-radius: 5px;
+      margin-block-end: 1rem;
+      margin-inline-end: 1rem;
+      max-width: $width;
+      flex: 0 0 $width;
+      list-style: none;
+      padding: 1rem;
+
+      &.successful svg.status {
+        color: green;
+      }
+
+      &.failed svg.status {
+        color: red;
+      }
     }
 
-    &.failed svg.status {
-      color: red;
-    }
-  }
+    h4 {
+      display: flex;
+      white-space: initial;
 
-  h4,
-  .info {
-    margin: 0 0 .5rem 0;
+      svg {
+        margin-right: 2px;
+      }
+
+      .push {
+        margin-left: auto;
+      }
+    }
+
+    h4,
+    .info {
+      margin: 0 0 .5rem 0;
+    }
   }
 }
 </style>

@@ -15,7 +15,7 @@
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ $t(latestEvent.type, { host: latestEvent.data.description }) }}
+      <span>{{ $t(latestEvent.type, { host: latestEvent.data.description }) }}</span>
     </h4>
     <div v-if="latestDataEvent"
          class="info">

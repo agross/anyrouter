@@ -12,8 +12,8 @@
       <font-awesome-icon class="status"
                          :icon="icon"
                          :spin="running"/>
-      {{ $t(latestEvent.type) }}
-      <font-awesome-icon class="refresh"
+      <span>{{ $t(latestEvent.type) }}</span>
+      <font-awesome-icon class="push refresh"
                          icon="sync-alt"
                          :spin="running"
                          :class="{ disabled: running }"
@@ -159,7 +159,7 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .download {
   color: green;
 }

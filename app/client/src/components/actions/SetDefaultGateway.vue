@@ -74,6 +74,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
   outline: none;
+  white-space: nowrap;
   transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
   &:hover {
