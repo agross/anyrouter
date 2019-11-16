@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <h1 :class="{ connected: $socket.connected }"><font-awesome-icon icon="route"/> anyrouter</h1>
+    <h1 :class="{ connected }">
+      <font-awesome-icon icon="route"/>
+      anyrouter
+    </h1>
     <ActionList></ActionList>
     <MonitorList></MonitorList>
   </div>
@@ -8,6 +11,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { Socket } from 'vue-socket.io-extended';
 import ActionList from './components/ActionList.vue';
 import MonitorList from './components/MonitorList.vue';
 
@@ -17,7 +21,45 @@ import MonitorList from './components/MonitorList.vue';
     MonitorList,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  private connected = false;
+
+  @Socket()
+  private connect() {
+    this.connected = true;
+
+    this.updateHead();
+  }
+
+  @Socket()
+  private disconnect() {
+    this.connected = false;
+
+    this.updateHead();
+  }
+
+  private mounted() {
+    this.updateHead();
+  }
+
+  private updateHead() {
+    const type = this.connected ? 'green' : 'red';
+
+    document.querySelectorAll('link[rel="icon"]')
+      .forEach(icon => {
+      const i = icon as HTMLLinkElement;
+
+      let href = i.href;
+      if (href.includes('/favicon/')) {
+        href = href.replace(new RegExp('/favicon/\\w+/'), `/favicon/${type}/`);
+      } else {
+        href = href.replace('/favicon-', `/favicon/${type}/favicon-`);
+      }
+
+      i.href = href;
+    });
+  }
+}
 </script>
 
 <style lang="scss">
