@@ -24,7 +24,7 @@ export default async function(job: Job) {
       rtt: result.time,
     };
   } catch (error) {
-    logger.error(`${job.data.host} ${JSON.stringify(error, null, 2)}`);
+    logger.error(`${job.data.host} ${error.message}`);
     throw error;
   }
 }
