@@ -1,0 +1,13 @@
+{
+  "masterPicture": "public/favicon/red/favicon.svg",
+  "design": {
+    "desktopBrowser": {}
+  },
+  "settings": {
+    "scalingAlgorithm": "Mitchell",
+    "errorOnImageTooSmall": false,
+    "readmeFile": false,
+    "htmlCodeFile": false,
+    "usePathAsIs": false
+  }
+}

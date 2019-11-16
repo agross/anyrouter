@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "favicon": "real-favicon generate public/favicon/favicon.json public/favicon/favicon.json.data dist && real-favicon inject public/favicon/favicon.json.data dist dist/*.html",
+    "favicon": "real-favicon generate public/favicon/favicon.json public/favicon/favicon.json.data dist && real-favicon inject public/favicon/favicon.json.data dist dist/*.html && real-favicon generate public/favicon/red/favicon.json public/favicon/red/favicon.json.data dist/favicon/red && real-favicon generate public/favicon/green/favicon.json public/favicon/green/favicon.json.data dist/favicon/green",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
