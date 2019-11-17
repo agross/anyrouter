@@ -19,7 +19,6 @@ import flatMap from 'array.prototype.flatmap';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
-  private readonly QUEUE_MAX_HISTORY = 100;
   @WebSocketServer()
   private readonly server: Server;
   private readonly logger = new Logger(EventsGateway.name);
@@ -60,12 +59,13 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   @SubscribeMessage('setDefaultGateway')
-  async setNewDefaultGateway(
+  async setDefaultGateway(
     @MessageBody() message: SetDefaultGateway,
   ): Promise<JobId> {
     this.logger.log(`Setting ${message.gateway} as default gateway`);
 
     const job = await this.jobs.setDefaultGateway.add('set-default-gateway', {
+      limit: 5,
       gateway: message.gateway,
     });
 
@@ -76,7 +76,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   async speedTest(): Promise<JobId> {
     this.logger.log(`Running Speedtest`);
 
-    const job = await this.jobs.speedTest.add('speed-test', {});
+    const job = await this.jobs.speedTest.add('speed-test', { limit: 40 });
 
     return job.id;
   }
@@ -87,7 +87,8 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   private async getEventHistory(): Promise<Event[]> {
-    const getLatestJobs = async (queue: Queue<any>, limit: number) => {
+    const getLatestJobs = async (queue: Queue<any>) => {
+      // Delayed means the job is about to be run.
       const jobs = await queue.getJobs(
         ['completed', 'failed', 'delayed'],
         undefined,
@@ -95,26 +96,45 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         true,
       );
 
-      const events: Event[] = await Promise.all(
+      const events: Event[] = (await Promise.all(
         jobs.map(async job => Event.fromJob(job)),
-      );
+      ))
 
-      return events
-        .sort((left, right) => left.timestamp - right.timestamp)
-        .splice(-limit);
+      const byId: { [key: string]: Event[] } = events.reduce((acc: {}, event: Event) => {
+        acc[event.data.id] = acc[event.data.id] || [];
+        acc[event.data.id].push(event);
+        return acc;
+      }, {});
+
+      const limited = Object.keys(byId).map(group => {
+        let sorted = byId[group].sort((left, right) => left.timestamp - right.timestamp);
+
+        if (sorted.length > 0 && sorted[0].data.limit) {
+          const limit = events[0].data.limit;
+          sorted = sorted.slice(-limit);
+        }
+
+        return sorted;
+      });
+
+      return flatMap(limited, x => x);
     };
 
     const result = flatMap(
       await Promise.all(
         this.jobs.queues.map(
-          async queue => await getLatestJobs(queue, this.QUEUE_MAX_HISTORY),
+          async queue => {
+            const jobs = await getLatestJobs(queue);
+
+            this.logger.debug(
+              `${queue.name}: Loaded ${jobs.length} completed, failed and delayed events from history`,
+            );
+
+            return jobs;
+          },
         ),
       ),
       x => x,
-    );
-
-    this.logger.debug(
-      `Loaded ${result.length} completed and failed events from history`,
     );
 
     return result;

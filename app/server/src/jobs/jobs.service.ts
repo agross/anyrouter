@@ -68,14 +68,18 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     const jobs = this.getPingJobs(this.ping).concat([
       [
         this.getDefaultGateway,
-        {},
+        {
+          limit: 5,
+        },
         {
           repeat: { every: 10000 },
         },
       ],
       [
         this.publicIp,
-        {},
+        {
+          limit: 5,
+        },
         {
           repeat: { every: 60000 },
         },
@@ -100,7 +104,12 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
       .concat(this.config.gateways)
       .map((host, index) => [
         queue,
-        { description: host.description, host: host.host },
+        {
+          limit: 40,
+          id: host.host,
+          description: host.description,
+          host: host.host,
+        },
         {
           repeat: { every: 5000 + index },
         } as JobOptions,

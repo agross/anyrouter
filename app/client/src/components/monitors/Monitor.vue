@@ -24,10 +24,13 @@ export default class Monitor extends Vue {
     clearInterval(this.latestDataEventTimestampTimer);
   }
 
-  protected get dataEvents() {
+  private get allDataEvents() {
     return this.events
-    .filter(e => e.status === 'successful' || e.status === 'failed')
-    .slice(-1 * this.MAX_EVENTS);
+    .filter(e => e.status === 'successful' || e.status === 'failed');
+  }
+
+  protected get dataEvents() {
+    return this.allDataEvents.slice(-1 * this.MAX_EVENTS);
   }
 
   protected get latestDataEvent(): any {
@@ -75,13 +78,13 @@ export default class Monitor extends Vue {
 
   private shouldListenTo(event: any): boolean {
     return this.latestEvent.type === event.type &&
-           JSON.stringify(this.latestEvent.data) === JSON.stringify(event.data);
+           this.latestEvent.data.id === event.data.id;
   }
 
   private addEvent(event: any) {
     this.events.push(event);
 
-    if (this.events.length > this.MAX_EVENTS) {
+    if (this.allDataEvents.length > this.MAX_EVENTS) {
       this.events.shift();
     }
 

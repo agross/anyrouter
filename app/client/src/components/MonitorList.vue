@@ -70,7 +70,7 @@ export default class MonitorList extends Vue {
 
   private addEvents(onlyNewTypes: boolean, ...events: any[]) {
     events.forEach(event => {
-      const key = `${event.type}-${JSON.stringify(event.data)}`;
+      const key = `${event.type}-${event.data.id}`;
 
       if (onlyNewTypes && this.events[key]) {
         return;
