@@ -7373,10 +7373,10 @@ vue-socket.io-extended@^4.0.0:
   dependencies:
     "@types/socket.io-client" "1.4.32"
 
-vue-sparklines@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/vue-sparklines/-/vue-sparklines-0.1.9.tgz#9f808d87cdaf56823a37d2889aba2b4b3b6487df"
-  integrity sha512-iDMogBrvKwqtTwXYPxkX2J0xJiwqZ4b6n7jmroETjsRZWF3DfWjTyxI8r3Oex5lfRThIYdioSBDR0bK3gWezgA==
+vue-sparklines@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/vue-sparklines/-/vue-sparklines-0.2.1.tgz#2c754b49af5d86a62308930f72bad8fc376d3beb"
+  integrity sha512-Zhe5yx7M9gWa1znK8JFKd1/SdlDMgUeTcM6dFbLbT98ixlSZAr8jiAVonkHVwCEv0DyvSAJeJQVQTnvIh4WbSw==
   dependencies:
     vue "^2.2.1"
 

@@ -7,7 +7,7 @@ Vue.use(FontAwesome);
 import SocketIO from './init/socket.io';
 Vue.use(SocketIO);
 
-import Sparkline from './init/sparkline';
+import Sparkline from 'vue-sparklines';
 Vue.use(Sparkline);
 
 import VTooltip from 'v-tooltip';

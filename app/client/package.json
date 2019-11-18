@@ -23,7 +23,7 @@
     "vue-moment": "^4.0.0",
     "vue-property-decorator": "^8.1.0",
     "vue-socket.io-extended": "^4.0.0",
-    "vue-sparklines": "^0.1.9"
+    "vue-sparklines": "^0.2.1"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.4.1",
