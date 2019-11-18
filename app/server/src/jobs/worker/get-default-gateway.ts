@@ -5,12 +5,12 @@ import * as network from 'network';
 
 const logger = LoggerFactory.createLogger(__filename);
 
-const get_gateway_ip = util.promisify(network.get_gateway_ip);
+const getGatewayIp = util.promisify(network.get_gateway_ip);
 
 export default function(job: Job) {
   logger.debug(`Job ${job.id}`);
 
-  return get_gateway_ip()
+  return getGatewayIp()
     .then((ip: string) => {
       const result = { ip };
 
