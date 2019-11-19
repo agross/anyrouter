@@ -1,0 +1,7 @@
+host-record=nas.home.tedeg.eu, 192.168.178.3
+
+host-record=werkstatt.ap.home.tedeg.eu, 192.168.178.10
+host-record=büro.ap.home.tedeg.eu, 192.168.178.11
+host-record=wohnung.ap.home.tedeg.eu, 192.168.178.12
+
+cname=tedeg-nas.home.tedeg.eu, nas.home.tedeg.eu
