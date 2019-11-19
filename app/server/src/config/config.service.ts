@@ -39,9 +39,7 @@ export class ConfigService {
       ENABLE_CORS: Joi.boolean()
         .default(false)
         .description('Enable CORS for development'),
-      LOG_LEVEL: joi
-        .logLevel()
-        .description('Enabled log levels'),
+      LOG_LEVEL: joi.logLevel().description('Enabled log levels'),
     });
 
     const { error, value: validatedConfig } = schema.validate(envConfig);

@@ -96,18 +96,23 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
         true,
       );
 
-      const events: Event[] = (await Promise.all(
+      const events: Event[] = await Promise.all(
         jobs.map(async job => Event.fromJob(job)),
-      ))
+      );
 
-      const byId: { [key: string]: Event[] } = events.reduce((acc: {}, event: Event) => {
-        acc[event.data.id] = acc[event.data.id] || [];
-        acc[event.data.id].push(event);
-        return acc;
-      }, {});
+      const byId: { [key: string]: Event[] } = events.reduce(
+        (acc: {}, event: Event) => {
+          acc[event.data.id] = acc[event.data.id] || [];
+          acc[event.data.id].push(event);
+          return acc;
+        },
+        {},
+      );
 
       const limited = Object.keys(byId).map(group => {
-        let sorted = byId[group].sort((left, right) => left.timestamp - right.timestamp);
+        let sorted = byId[group].sort(
+          (left, right) => left.timestamp - right.timestamp,
+        );
 
         if (sorted.length > 0 && sorted[0].data.limit) {
           const limit = events[0].data.limit;
@@ -122,17 +127,15 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
 
     const result = flatMap(
       await Promise.all(
-        this.jobs.queues.map(
-          async queue => {
-            const jobs = await getLatestJobs(queue);
+        this.jobs.queues.map(async queue => {
+          const jobs = await getLatestJobs(queue);
 
-            this.logger.debug(
-              `${queue.name}: Loaded ${jobs.length} completed, failed and delayed events from history`,
-            );
+          this.logger.debug(
+            `${queue.name}: Loaded ${jobs.length} completed, failed and delayed events from history`,
+          );
 
-            return jobs;
-          },
-        ),
+          return jobs;
+        }),
       ),
       x => x,
     );
