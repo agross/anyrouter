@@ -9,7 +9,10 @@ import Arena from 'bull-arena';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(path.join(__dirname, '..', 'client'));
+  app.useStaticAssets(path.join(__dirname, '..', 'client'), {
+    immutable: true,
+    maxAge: '14 days',
+  });
 
   const logger = new Logger(__filename);
 
