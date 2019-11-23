@@ -4,10 +4,15 @@ set -euo pipefail
 
 cd "${0%%/*}"
 
-docker=(docker-compose --project-name anyrouter)
+docker=(docker-compose --project-name anyrouter --file docker-compose.yaml)
 
 if [[ "$(uname)" == *Darwin* ]]; then
-  docker+=(--file docker-compose.yaml --file docker-compose.override.macos.yaml)
+  docker+=(--file docker-compose.override.macos.yaml)
 fi
+
+if [[ "$(uname -a)" == *synology* ]]; then
+  docker+=(--file docker-compose.override.synology.yaml)
+fi
+
 
 "${docker[@]}" up --build "$@"
