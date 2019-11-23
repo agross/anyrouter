@@ -75,10 +75,12 @@ export default class SetDefaultGateway extends Vue {
 
 <style scoped lang="scss">
 button {
-  $color: lighten($color: green, $amount: 5%);
+  $active: green;
+  $inactive-hover:  #2c3e50;
+  $inactive: lighten($color: $inactive-hover, $amount: 5%);
 
-  background: $color;
-  border: $color;
+  background: $inactive;
+  border: $inactive;
   color: white;
   font-size: 1rem;
   padding: .5rem;
@@ -89,19 +91,17 @@ button {
   transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
   &:hover {
-    background: green;
+    background: $inactive-hover;
   }
 
   &:focus {
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, .5);
+    box-shadow: 0 0 0 0.2rem rgba($inactive, .5);
   }
 
   &[disabled] {
-    $color: gray;
-    background: $color;
-    border: $color;
+    background: $active;
+    border: $active;
     cursor: not-allowed;
-    opacity: .6;
 
     &:focus {
       box-shadow: none;
