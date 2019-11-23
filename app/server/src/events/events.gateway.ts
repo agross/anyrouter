@@ -65,6 +65,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(`Setting ${message.gateway} as default gateway`);
 
     const job = await this.jobs.setDefaultGateway.add('set-default-gateway', {
+      id: message.gateway,
       limit: 5,
       gateway: message.gateway,
     });
