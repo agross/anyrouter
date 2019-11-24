@@ -2,21 +2,10 @@
 
 set -euo pipefail
 
-server=@localhost
-domain=.home.tedeg.eu
+source "${0%/*}/docker-healthcheck.conf"
+
 status=0
-
-hosts=(
-  dsl-router
-  lte-router
-  anyrouter
-
-  switch
-  nas
-  werkstatt.ap
-  büro.ap
-  unten.privat.ap
-)
+server=@localhost
 
 for host in "${hosts[@]}"; do
   qualified="$host$domain"

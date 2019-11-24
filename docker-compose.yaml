@@ -30,6 +30,10 @@ services:
         source: ./dnsmasq/conf.d
         target: /etc/dnsmasq.d
         read_only: true
+      - type: bind
+        source: ./dnsmasq/docker-healthcheck.conf
+        target: /docker-healthcheck.conf
+        read_only: true
 
   app:
     image: agross/anyrouter
