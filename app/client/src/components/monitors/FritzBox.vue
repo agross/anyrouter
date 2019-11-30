@@ -176,13 +176,4 @@ export default class FritzBox extends Mixins<Monitor>(Monitor) {
 .upload {
   color: goldenrod;
 }
-
-.refresh {
-  float: right;
-  cursor: pointer;
-
-  &.disabled {
-    cursor: not-allowed;
-  }
-}
 </style>
