@@ -25,8 +25,8 @@
         {{ latestDataEvent.error.reason }}
       </span>
       <span v-if="latestDataEvent.result">
-        <span class="download">⬇</span> {{ Math.round(latestDataEvent.result.speeds.download, 0) }} Mbit/s
-        <span class="upload">⬆</span> {{ Math.round(latestDataEvent.result.speeds.upload, 0) }} Mbit/s
+        <span class="download">⬇</span> {{ Math.round(latestDataEvent.result.speeds.download) }} Mbit/s
+        <span class="upload">⬆</span> {{ Math.round(latestDataEvent.result.speeds.upload) }} Mbit/s
       </span>
 
       <font-awesome-icon icon="info-circle"
@@ -67,6 +67,7 @@ export default class SpeedTest extends Mixins<Monitor>(Monitor) {
   public static canHandle(eventType: string): boolean {
     return eventType === 'speed-test';
   }
+
   private DOWNLOAD_COLOR = 'green';
   private UPLOAD_COLOR = 'goldenrod';
 
