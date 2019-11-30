@@ -148,8 +148,8 @@ export default class FritzBox extends Mixins<Monitor>(Monitor) {
 
         let message;
         if (event.status === 'successful') {
-          message = `<span class="download">⬇</span> ${FritzBox.toKilobytes(event.result.NewByteReceiveRate)} KB/s<br>
-            <span class="upload">⬆</span> ${FritzBox.toKilobytes(event.result.NewByteSendRate)} KB/s`;
+          message = `<span class="download">⬇</span> ${FritzBox.toKilobytes(event.result.NewByteReceiveRate)} KB/s (${event.result.NewByteReceiveRate} B/s)<br>
+            <span class="upload">⬆</span> ${FritzBox.toKilobytes(event.result.NewByteSendRate)} KB/s (${event.result.NewByteSendRate} B/s)`;
         } else {
           const err = event.error && event.error.reason;
 
