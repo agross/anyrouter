@@ -31,6 +31,11 @@ export class ConfigService {
         .allow('')
         .custom(this.getHostDescriptions)
         .description('Useable gateways'),
+      FRITZBOX: Joi.string()
+        .optional()
+        .allow('')
+        .custom(this.getHostDescriptions)
+        .description('FRITZ!Box hosts to monitor'),
       PING: Joi.string()
         .optional()
         .allow('')
@@ -104,6 +109,10 @@ export class ConfigService {
 
   get gateways(): HostDescription[] {
     return (this.envConfig.GATEWAYS || []) as HostDescription[];
+  }
+
+  get fritzboxHosts(): HostDescription[] {
+    return (this.envConfig.FRITZBOX || []) as HostDescription[];
   }
 
   get enableCors(): boolean {

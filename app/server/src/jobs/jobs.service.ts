@@ -21,6 +21,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     readonly setDefaultGateway: Queue,
     @InjectQueue('speed-test') readonly speedTest: Queue,
     @InjectQueue('public-ip') private readonly publicIp: Queue,
+    @InjectQueue('fritzbox') private readonly fritzbox: Queue,
   ) {}
 
   async onModuleInit() {
@@ -50,6 +51,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
       this.setDefaultGateway,
       this.speedTest,
       this.publicIp,
+      this.fritzbox,
     ];
   }
 
@@ -65,26 +67,28 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async scheduleRepeatedJobs() {
-    const jobs = this.getPingJobs(this.ping).concat([
-      [
-        this.getDefaultGateway,
-        {
-          limit: 5,
-        },
-        {
-          repeat: { every: 10000 },
-        },
-      ],
-      [
-        this.publicIp,
-        {
-          limit: 5,
-        },
-        {
-          repeat: { every: 60000 },
-        },
-      ],
-    ]);
+    const jobs = this.getPingJobs(this.ping)
+      .concat(this.getFritzboxJobs(this.fritzbox))
+      .concat([
+        [
+          this.getDefaultGateway,
+          {
+            limit: 5,
+          },
+          {
+            repeat: { every: 10000 },
+          },
+        ],
+        [
+          this.publicIp,
+          {
+            limit: 5,
+          },
+          {
+            repeat: { every: 60000 },
+          },
+        ],
+      ]);
 
     const scheduled = jobs.map(job => {
       const [queue, data, options, ..._rest] = job;
@@ -114,6 +118,25 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
           repeat: { every: 5000 + index },
         } as JobOptions,
       ]);
+  }
+
+  private getFritzboxJobs(queue: Queue<any>): [Queue<any>, any, JobOptions][] {
+    // https://optimalbits.github.io/bull/#repeatable
+    // "Bull is smart enough not to add the same repeatable job if the repeat
+    // options are the same."
+    // Same-named jobs need to have different repeat options.
+    return this.config.fritzboxHosts.map((host, index) => [
+      queue,
+      {
+        limit: 40,
+        id: host.host,
+        description: host.description,
+        host: host.host,
+      },
+      {
+        repeat: { every: 2000 + index },
+      } as JobOptions,
+    ]);
   }
 
   private async schedule(

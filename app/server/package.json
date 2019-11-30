@@ -28,6 +28,7 @@
     "@nestjs/platform-socket.io": "^6.8.2",
     "@nestjs/websockets": "^6.8.2",
     "array.prototype.flatmap": "^1.2.2",
+    "axios": "^0.19.0",
     "bull": "^3.11.0",
     "bull-arena": "^2.6.4",
     "dotenv": "^8.1.0",
@@ -39,7 +40,8 @@
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
     "speedtest-promise": "^1.1.0",
-    "timespan": "^2.3.0"
+    "timespan": "^2.3.0",
+    "xml2js": "^0.4.22"
   },
   "devDependencies": {
     "@nestjs/schematics": "^6.7.0",
@@ -56,6 +58,7 @@
     "@types/ping": "^0.2.0",
     "@types/socket.io": "^2.1.4",
     "@types/supertest": "^2.0.8",
+    "@types/xml2js": "^0.4.5",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2",

@@ -33,6 +33,7 @@ import { Socket } from 'vue-socket.io-extended';
 import Timing from './monitors/Timing.vue';
 import StaticValue from './monitors/StaticValue.vue';
 import SpeedTest from './monitors/SpeedTest.vue';
+import FritzBox from './monitors/FritzBox.vue';
 import sortKeys from 'sort-keys';
 
 @Component({
@@ -40,6 +41,7 @@ import sortKeys from 'sort-keys';
     Timing,
     StaticValue,
     SpeedTest,
+    FritzBox,
   },
 })
 export default class MonitorList extends Vue {
@@ -89,7 +91,7 @@ export default class MonitorList extends Vue {
   private monitorFor(events: any[]) {
     const event = events[0].type;
 
-    return [Timing, SpeedTest, StaticValue].find(m => m.canHandle(event));
+    return [Timing, SpeedTest, FritzBox, StaticValue].find(m => m.canHandle(event));
   }
 }
 </script>

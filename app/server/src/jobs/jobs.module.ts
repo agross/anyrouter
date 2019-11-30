@@ -1,4 +1,4 @@
-import { Module, DynamicModule, Logger } from '@nestjs/common';
+import { Module, DynamicModule } from '@nestjs/common';
 import {
   BullModule,
   BullQueueAdvancedSeparateProcessor,
