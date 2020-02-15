@@ -28,7 +28,7 @@ import moment from 'moment';
 import 'moment/locale/de';
 moment.locale(locale);
 
-import * as VueMoment from 'vue-moment';
+import VueMoment from 'vue-moment';
 Vue.use(VueMoment, { moment });
 
 Vue.config.productionTip = false;

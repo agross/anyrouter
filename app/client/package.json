@@ -26,7 +26,7 @@
     "vue-sparklines": "^0.2.1"
   },
   "devDependencies": {
-    "@kazupon/vue-i18n-loader": "^0.4.1",
+    "@intlify/vue-i18n-loader": "^0.6.1",
     "@types/socket.io": "^2.1.4",
     "@types/vue-moment": "^4.0.0",
     "@vue/cli-plugin-typescript": "^3.12.0",
