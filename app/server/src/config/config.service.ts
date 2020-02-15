@@ -3,6 +3,7 @@ import Joi = require('@hapi/joi');
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import { HostDescription } from './model/host-description';
+import TimeSpan from 'timespan';
 
 export interface EnvConfig {
   [key: string]: string;
@@ -45,6 +46,10 @@ export class ConfigService {
         .default(false)
         .description('Enable CORS for development'),
       LOG_LEVEL: joi.logLevel().description('Enabled log levels'),
+      KEEP_JOB_HISTORY_MINUTES: Joi.number()
+        .default(60)
+        .positive()
+        .description('Keep job history for n minutes'),
     });
 
     const { error, value: validatedConfig } = schema.validate(envConfig);
@@ -121,5 +126,9 @@ export class ConfigService {
 
   get logLevel(): LogLevel[] {
     return this.envConfig.LOG_LEVEL;
+  }
+
+  get keepJobHistory(): TimeSpan {
+    return TimeSpan.fromMinutes(this.envConfig.KEEP_JOB_HISTORY_MINUTES);
   }
 }

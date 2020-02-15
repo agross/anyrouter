@@ -10,7 +10,6 @@ import { ConfigService } from '../config/config.service';
 export class JobsService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JobsService.name);
   private subscription: Subscription;
-  private readonly KEEP_JOB_HISTORY: TimeSpan = TimeSpan.fromHours(1);
 
   constructor(
     private readonly config: ConfigService,
@@ -29,7 +28,7 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     await this.scheduleRepeatedJobs();
 
     const subscriptions = this.queues.map(queue =>
-      this.scheduleCleanup(queue, this.KEEP_JOB_HISTORY),
+      this.scheduleCleanup(queue, this.config.keepJobHistory),
     );
 
     this.subscription = subscriptions.reduce(
