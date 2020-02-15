@@ -1,6 +1,6 @@
 import { OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Queue, Job, JobOptions, JobStatusClean } from 'bull';
-import { InjectQueue, BullQueueEvents } from 'nest-bull';
+import { InjectQueue, BullQueueEvents } from '@nestjs/bull';
 import { Subscription, interval } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import TimeSpan from 'timespan';

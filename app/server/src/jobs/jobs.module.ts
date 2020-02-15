@@ -3,7 +3,7 @@ import {
   BullModule,
   BullQueueAdvancedSeparateProcessor,
   BullModuleOptions,
-} from 'nest-bull';
+} from '@nestjs/bull';
 import * as path from 'path';
 import * as glob from 'glob';
 import { ConfigModule } from '../config/config.module';
@@ -39,11 +39,11 @@ export class JobsModule {
   }
 
   static register(): DynamicModule {
-    const bull = BullModule.register(this.queues);
+    const bull = this.queues.map(x => BullModule.registerQueue(x));
 
     return {
       module: JobsModule,
-      imports: [ConfigModule, bull],
+      imports: [ConfigModule, ...bull],
       providers: [JobsService],
       exports: [JobsService],
     };

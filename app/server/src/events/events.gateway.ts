@@ -9,7 +9,7 @@ import {
 import { Server } from 'ws';
 import { Socket } from 'socket.io';
 import { Queue, JobId } from 'bull';
-import { BullQueueGlobalEvents } from 'nest-bull';
+import { BullQueueGlobalEvents } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { JobsService } from '../jobs/jobs.service';
 import { ConfigService } from '../config/config.service';
