@@ -32,21 +32,37 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection {
     this.jobs.queues.forEach(queue => {
       queue.on(BullQueueGlobalEvents.ACTIVE, async id => {
         const job = await queue.getJob(id);
+        if (job === null) {
+          return;
+        }
+
         this.onEvent(await Event.fromJob(job));
       });
 
       queue.on(BullQueueGlobalEvents.FAILED, async id => {
         const job = await queue.getJob(id);
+        if (job === null) {
+          return;
+        }
+
         this.onEvent(await Event.fromJob(job));
       });
 
       queue.on(BullQueueGlobalEvents.COMPLETED, async id => {
         const job = await queue.getJob(id);
+        if (job === null) {
+          return;
+        }
+
         this.onEvent(await Event.fromJob(job));
       });
 
       queue.on(BullQueueGlobalEvents.STALLED, async id => {
         const job = await queue.getJob(id);
+        if (job === null) {
+          return;
+        }
+
         this.logger.error(`Job ${id} stalled (${job.name})`);
         this.onEvent(await Event.fromJob(job));
       });
