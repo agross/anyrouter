@@ -20,7 +20,7 @@
     "vue-class-component": "^7.0.2",
     "vue-i18n": "^8.15.0",
     "vue-mixin-decorator": "^1.2.0",
-    "vue-moment": "^4.0.0",
+    "vue-moment": "^4.1.0",
     "vue-property-decorator": "^8.1.0",
     "vue-socket.io-extended": "^4.0.0",
     "vue-sparklines": "^0.2.1"
